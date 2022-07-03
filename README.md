@@ -9,6 +9,6 @@
 - I'm not the owner of this website
 - I will remove the program upon request
 - The program was made for educational purposes
-
-
+#
+# Informace
 Stránka má omezený počet vyhledávání/den, tudíž program přestane fungovat, jakmile přesáhnete denní limit vyhledávání
