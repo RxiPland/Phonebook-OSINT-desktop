@@ -10,5 +10,5 @@
 - I will remove the program upon request
 - The program was made for educational purposes
 #
-# Použítí
+# Použití
 Stránka má omezený počet vyhledávání/den, tudíž program přestane fungovat, jakmile přesáhnete denní limit vyhledávání
