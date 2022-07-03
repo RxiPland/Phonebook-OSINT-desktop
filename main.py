@@ -61,6 +61,73 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
         pass
 
+    def kontrola(self):
+
+        # zkontroluje zda nejsou pole prázdná, doména je platná a je vybrán typ hledání
+
+        domena_text = najit_domenu_grafika1.lineEdit.text()
+
+        if domena_text == "":
+            
+            return 1
+
+        elif "." not in domena_text:
+            
+            return 2
+
+        elif najit_domenu_grafika1.comboBox.currentText() == "Vyberte":
+
+            return 3
+
+        else:
+            
+            # v pořádku
+
+            return 4
+
+
+    def main(self):
+        # hlavní funkce která se spustí ostatní
+
+        odpoved = str(self.kontrola())
+
+        if odpoved == 1:
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém")
+            msgBox.setText("Vyplňte pole s doménou")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+            return
+
+        elif odpoved == 2:
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém")
+            msgBox.setText("Doména není platná!\n\nNapř. google.com, facebook.com, seznam.cz")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+            return
+
+        elif odpoved == 3:
+
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setWindowTitle("Problém")
+            msgBox.setText("Vyberte co chcete hledat")
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
+            return
+
+        elif odpoved == 4:
+            # všechno v pořádku
+
+            pass
 
 
 if __name__ == "__main__":
@@ -77,6 +144,8 @@ if __name__ == "__main__":
     #tabulka_data_grafika1.pushButton_2.clicked.connect() # uložit data do souboru
     #tabulka_data_grafika1.pushButton_3.clicked.connect() # kopírovat všechna data do schránky
     #tabulka_data_grafika1.pushButton_4.clicked.connect() # kopírovat řádek do schránky
+
+    najit_domenu_grafika1.pushButton.clicked.connect(najit_domenu_grafika1.main)
 
     app.setQuitOnLastWindowClosed(False)
     app.lastWindowClosed.connect(tabulka_data_grafika1.about_to_quit_funkce)
