@@ -17,6 +17,8 @@ class Ui_MainWindow_tabulka_data_grafika(object):
 
     def setupUi(self, MainWindow):
 
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
+
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(679, 521)
         font = QtGui.QFont()
@@ -79,7 +81,7 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.label.setHidden(True)
 
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(100, 190, 301, 101))
+        self.label_2.setGeometry(QtCore.QRect(120, 190, 301, 101))
         self.label_2.setObjectName("label_2")
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
@@ -102,7 +104,7 @@ class Ui_MainWindow_tabulka_data_grafika(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Phonebook OSINT desktop"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Nalezená data"))
         self.pushButton.setText(_translate("MainWindow", "Vyhledat novou\ndoménu"))

@@ -17,6 +17,8 @@ class Ui_MainWindow_najit_domenu_grafika(object):
 
     def setupUi(self, MainWindow):
 
+        MainWindow.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
+
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(392, 190)
         font = QtGui.QFont()
