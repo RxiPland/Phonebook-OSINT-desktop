@@ -33,5 +33,9 @@ if __name__ == "__main__":
 
     tabulka_data_grafika1.show()
 
+    #tabulka_data_grafika1.pushButton.clicked.connect()  # najít novou doménu
+    #tabulka_data_grafika1.pushButton_2.clicked.connect() # uložit data do souboru
+    #tabulka_data_grafika1.pushButton_3.clicked.connect() # kopírovat všechna data do schránky
+    #tabulka_data_grafika1.pushButton_4.clicked.connect() # kopírovat řádek do schránky
 
     sys.exit(app.exec_())

@@ -33,7 +33,7 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.tableWidget.setRowCount(0)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(0, item)
-        self.tableWidget.setColumnWidth(0,440)
+        self.tableWidget.setColumnWidth(0,410)
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setCurrentCell(-1, -1)
         self.tableWidget.setHidden(False)
@@ -78,6 +78,10 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.label.setObjectName("label")
         self.label.setHidden(True)
 
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setGeometry(QtCore.QRect(100, 190, 301, 101))
+        self.label_2.setObjectName("label_2")
+
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(470, 440, 181, 20))
         self.lineEdit.setObjectName("lineEdit")
@@ -103,17 +107,9 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         item.setText(_translate("MainWindow", "Nalezená data"))
         self.pushButton.setText(_translate("MainWindow", "Vyhledat novou\ndoménu"))
         self.pushButton_2.setText(_translate("MainWindow", "Uložit data\ndo souboru"))
-        self.pushButton_3.setText(_translate("MainWindow", "Kopírovat data\ndo schránky"))
+        self.pushButton_3.setText(_translate("MainWindow", "Kopírovat všechna\ndata do schránky"))
         self.pushButton_4.setText(_translate("MainWindow", "Kopírovat řádek\ndo schránky"))
         self.label.setText(_translate("MainWindow", "Celkem nalezeno:"))
+        self.label_2.setText(_translate("MainWindow", "Zatím nebyla prohledána žádná doména;\nzmáčkněte tlačítko pro vyhledávání"))
         self.lineEdit.setText(_translate("MainWindow", "X emailů/ subdomén/ adresářů"))
         self.lineEdit_2.setText(_translate("MainWindow", "[Doména]"))
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow_tabulka_data_grafika()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
