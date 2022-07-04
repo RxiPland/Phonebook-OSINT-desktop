@@ -11,4 +11,4 @@
 - The program was made for educational purposes
 #
 # Použití
-Stránka má omezený počet vyhledávání/den, tudíž program přestane fungovat, jakmile přesáhnete denní limit vyhledávání
+Stránka má omezený počet vyhledávání/den, tudíž program přestane fungovat, jakmile přesáhnete tento denní limit (na základě IP adresy)
