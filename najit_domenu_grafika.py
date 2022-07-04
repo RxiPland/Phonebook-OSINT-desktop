@@ -50,8 +50,7 @@ class Ui_MainWindow_najit_domenu_grafika(object):
         self.label_2.setObjectName("label_2")
 
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setEnabled(True)
-        self.pushButton_2.setGeometry(QtCore.QRect(30, 120, 161, 31))
+        self.pushButton_2.setGeometry(QtCore.QRect(30, 135, 161, 31))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.setHidden(True)
 
