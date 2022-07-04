@@ -10,6 +10,7 @@ from requests import Session, get
 import time
 from threading import Thread
 from json import loads
+from pyperclip import copy
 
 class Hodnoty_K_pouziti0:
 
@@ -19,9 +20,9 @@ class Hodnoty_K_pouziti0:
     # okno 1 => okno s vyhledáváním
 
     def __init__(self):
-        self.okno = 0
-        self.predchozi_id = ""
-        self.hotove_hledani = []
+        self.okno = 0               # int
+        self.predchozi_id = ""      # str
+        self.hotove_hledani = []    # list
 
 class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
@@ -39,12 +40,12 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
     def about_to_quit_funkce(self):
 
-        # class AktualniOkno slouží pro uchovávání čísla, které reprezentuje okno, které je otevřeno naposled
+        # class hodnoty_K_pouziti slouží pro uchovávání čísla, které reprezentuje okno, které je otevřeno naposled
 
         if hodnoty_K_pouziti1.okno == 0:
             # pokud uživatel zavře okno s tabulkou, program se ukončí
 
-            sys.exit(app.exec_())
+            app.quit()
         
         elif hodnoty_K_pouziti1.okno == 1:
             # pokud uživatel zavře okno najít doménu, funkce otevře okno s tabulkou
@@ -55,6 +56,26 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
             hodnoty_K_pouziti1.okno = 0
 
 
+    def ulozit_do_souboru(self):
+        # uloží data z tabulky do souboru
+
+        nactena_data = hodnoty_K_pouziti1.hotove_hledani[0]
+
+        f = open("ulozena_data.txt", "w")
+        f.writelines(nactena_data)
+        f.close()
+
+
+    def kopirovat_do_schranky(self):
+        # zkopíruje všechna data z tabulky do schránky
+
+        nactena_data = hodnoty_K_pouziti1.hotove_hledani[0]
+        finalni_string = ""
+
+        for item in nactena_data:
+            finalni_string += item + "\n" 
+
+        copy(finalni_string)
 
 class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
@@ -268,7 +289,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
         najit_domenu_grafika1.label.setHidden(True)
         najit_domenu_grafika1.label_2.setHidden(True)
 
-        #najit_domenu_grafika1.lineEdit.setReadOnly(True)   # POZOR DĚLÁ PROBLÉM
+        #najit_domenu_grafika1.lineEdit.setReadOnly(True)   # NEPOUŽÍVAT - DĚLÁ PROBLÉM (kvůli Threadu)
 
         najit_domenu_grafika1.lineEdit.setText("Hledání bylo dokončeno.")
         najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
@@ -313,6 +334,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
     def main(self):
         # hlavní funkce která se spustí ostatní
+        # kontroluje správnost
 
         odpoved = self.kontrola()
 
@@ -373,9 +395,9 @@ if __name__ == "__main__":
     tabulka_data_grafika1.show()
 
     tabulka_data_grafika1.pushButton.clicked.connect(tabulka_data_grafika1.tlacitko_nova_domena)  # najít novou doménu
-    #tabulka_data_grafika1.pushButton_2.clicked.connect() # uložit data do souboru
-    #tabulka_data_grafika1.pushButton_3.clicked.connect() # kopírovat všechna data do schránky
-    #tabulka_data_grafika1.pushButton_4.clicked.connect() # kopírovat řádek do schránky
+    tabulka_data_grafika1.pushButton_2.clicked.connect(tabulka_data_grafika1.ulozit_do_souboru) # uložit data do souboru
+    tabulka_data_grafika1.pushButton_3.clicked.connect(tabulka_data_grafika1.kopirovat_do_schranky) # kopírovat všechna data do schránky
+    #tabulka_data_grafika1.pushButton_4.clicked.connect(tabulka_data_grafika1.) # kopírovat řádek do schránky
 
     najit_domenu_grafika1.pushButton.clicked.connect(najit_domenu_grafika1.main)
     najit_domenu_grafika1.pushButton_2.clicked.connect(najit_domenu_grafika1.nacteni_dat_do_tabulky)
