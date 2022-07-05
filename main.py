@@ -3,7 +3,7 @@
 # Python 3.9.12
 
 
-# Phonebook - desktop
+# Phonebook - desktop (https://phonebook.cz/)
 
 from tabulka_data_grafika import Ui_MainWindow_tabulka_data_grafika
 from najit_domenu_grafika import Ui_MainWindow_najit_domenu_grafika
@@ -14,6 +14,7 @@ import time
 from threading import Thread
 from json import loads
 from pyperclip import copy
+import webbrowser
 
 
 class file_dialog0(QDialog):
@@ -47,6 +48,10 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         QMainWindow.__init__(self, *args, **kwargs)
         self.setupUi(self)
+
+    def otevrit_odkaz(self):
+
+        webbrowser.open_new_tab("https://phonebook.cz/")
 
     def tlacitko_nova_domena(self):
 
@@ -520,6 +525,7 @@ if __name__ == "__main__":
 
     tabulka_data_grafika1.show()
 
+    tabulka_data_grafika1.label_3.linkActivated.connect(tabulka_data_grafika1.otevrit_odkaz)
 
     tabulka_data_grafika1.pushButton.clicked.connect(tabulka_data_grafika1.tlacitko_nova_domena)  # najít novou doménu
     tabulka_data_grafika1.pushButton_2.clicked.connect(tabulka_data_grafika1.ulozit_do_souboru) # uložit data do souboru

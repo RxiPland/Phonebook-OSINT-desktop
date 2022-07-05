@@ -49,7 +49,7 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.pushButton.setObjectName("pushButton")
 
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(490, 310, 145, 45))
+        self.pushButton_2.setGeometry(QtCore.QRect(490, 280, 145, 45))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(10)
@@ -58,7 +58,7 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.pushButton_2.setHidden(True)
 
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setGeometry(QtCore.QRect(490, 250, 145, 45))
+        self.pushButton_3.setGeometry(QtCore.QRect(490, 220, 145, 45))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(10)
@@ -67,7 +67,7 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.pushButton_3.setHidden(True)
 
         self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_4.setGeometry(QtCore.QRect(490, 160, 145, 45))
+        self.pushButton_4.setGeometry(QtCore.QRect(490, 140, 145, 45))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(10)
@@ -83,6 +83,10 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(120, 190, 301, 101))
         self.label_2.setObjectName("label_2")
+
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setGeometry(QtCore.QRect(518, 360, 141, 21))
+        self.label_3.setObjectName("label_3")
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(470, 440, 181, 20))
@@ -113,5 +117,6 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.pushButton_4.setText(_translate("MainWindow", "Kopírovat řádek\ndo schránky"))
         self.label.setText(_translate("MainWindow", "Celkem nalezeno:"))
         self.label_2.setText(_translate("MainWindow", "Zatím nebyla prohledána žádná doména;\nzmáčkněte tlačítko pro vyhledávání"))
+        self.label_3.setText(_translate("MainWindow", "<a href='https://phonebook.cz/'>Používaný web</a>"))
         self.lineEdit.setText(_translate("MainWindow", "X emailů/ subdomén/ adresářů"))
         self.lineEdit_2.setText(_translate("MainWindow", "[Doména]"))
