@@ -76,10 +76,12 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
     def ulozit_do_souboru(self):
         # uloží data z tabulky do souboru
 
+        moznosti = {1: "Subdoména", 2: "Emailová adresa", 3: "Adresář"}
+
         vybrana_lokace = file_dialog1.vyberLokace_save()
 
         cesta_soubor = vybrana_lokace[0]
-        typ_souboru = vybrana_lokace[1]
+        typ_souboru = moznosti[vybrana_lokace[1]]
 
 
         content = hodnoty_K_pouziti1.hotove_hledani[0]
@@ -113,11 +115,21 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
             with open(cesta_soubor, "w") as f:
 
+                # uložení dat do souboru
+
                 f.write(str(finalni_json))
 
 
-            with open(cesta_soubor, "rw") as f:
+            with open(cesta_soubor, "r") as f:
+
+                # znovu načtení souboru
+
                 obsah = str(f.read())
+
+            
+            with open(cesta_soubor, "w") as f:
+
+                # přepsání ' uvozovek na " kvůli jsonu
 
                 obsah = obsah.replace("\'", "\"")
 
