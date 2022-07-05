@@ -1,5 +1,8 @@
 # udělal RxiPland (https://github.com/RxiPland)
 # 2022
+# Python 3.9.12
+
+
 # Phonebook - desktop
 
 from tabulka_data_grafika import Ui_MainWindow_tabulka_data_grafika
