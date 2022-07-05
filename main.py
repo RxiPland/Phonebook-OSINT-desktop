@@ -4,7 +4,7 @@
 
 from tabulka_data_grafika import Ui_MainWindow_tabulka_data_grafika
 from najit_domenu_grafika import Ui_MainWindow_najit_domenu_grafika
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QFileDialog, QDialog
 from requests import Session, get
 import time
@@ -28,16 +28,15 @@ class file_dialog0(QDialog):
 
 class Hodnoty_K_pouziti0:
 
-    # uchovává hodnoty
-
-    # okno 0 => okno s tabulkou
-    # okno 1 => okno s vyhledáváním
+    # pouze uchovává hodnoty
 
     def __init__(self):
-        self.okno = 0               # int
-        self.predchozi_id = ""      # str
-        self.hotove_hledani = []    # list
-        self.cekani_mezi_requestama = 1 # int
+        self.okno = 0               # int   (aktuální okno)         okno 0 => okno s tabulkou; okno 1 => okno s vyhledáváním
+        self.predchozi_id = ""      # str   (předchozí id hledání)
+        self.hotove_hledani = []    # list  (nalezená data)
+
+
+        self.cekani_mezi_requestama = 1 # int MOŽNOST NASTAVIT SVOJI HODNOTU
 
 class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
@@ -80,13 +79,15 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         vybrana_lokace = file_dialog1.vyberLokace_save()
 
-        cesta_soubor = vybrana_lokace[0]
-        typ_souboru = vybrana_lokace[1]
+        cesta_soubor = vybrana_lokace[0]    # cesta k souboru
+        typ_souboru = vybrana_lokace[1]     # .txt / .json
 
 
         content = hodnoty_K_pouziti1.hotove_hledani[0]
 
         if ".txt" in typ_souboru:
+
+            # uživatel vybral txt
 
             f = open(cesta_soubor, "w")
 
@@ -100,6 +101,8 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
             f.close()
 
         elif ".json" in typ_souboru:
+
+            # uživatel vybral json
 
             dohromady = []
 
@@ -134,8 +137,6 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
                 obsah = obsah.replace("\'", "\"")
 
                 f.write(obsah)
-
-
         else:
 
             return
@@ -162,7 +163,7 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
     
     def kopirovat_konkretni_radek(self):
 
-        # kopírovat vybraný řádek
+        # kopírovat pouze vybraný řádek
 
         vybrany_radek = tabulka_data_grafika1.tableWidget.currentRow()
 
@@ -170,6 +171,8 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
             pass
         else:
             content = hodnoty_K_pouziti1.hotove_hledani[0][vybrany_radek]
+
+            tabulka_data_grafika1.tableWidget.setCurrentCell(-1, -1)
 
             copy(content)
 
@@ -230,6 +233,8 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
         else:
 
             tabulka_data_grafika1.tableWidget.setRowCount(0)
+
+            tabulka_data_grafika1.label_2.setGeometry(QtCore.QRect(150, 190, 301, 101))
             
             tabulka_data_grafika1.label_2.setText("Nebyla nalezena žádná data")
             tabulka_data_grafika1.label_2.setHidden(False)
@@ -254,7 +259,9 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
     
     def nalezeni_API_klice(self, headers):
-        
+
+        # funkce která z html získa api klíč stránky
+        # pro nastavení vlastího API klíče smazat celý kód v TÉTO funkci a jako return dát string svého api klíče
 
         API_KEY = "077424c6-7a26-410e-9269-c9ac546886a4"    # defaultní
 
@@ -278,6 +285,9 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
     def vyhledat(self):
         # funkce která komunikuje s webovou stránkou
+
+        # 1. vyšle search (1x)
+        # 2. while loop, který posílá result requesty, pouze dokud nebude ve vráceném jsonu "status" číslo 1, který tuto smyčku ukončí
 
         start = time.time()
 
@@ -305,10 +315,11 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
         if hodnoty_K_pouziti1.predchozi_id == "":
 
             # pokud se hledá poprvé od spuštění programu, id bude prázdné (dosadí se null)
+            # kód v této if podmínce se tedy spouští pouze jednou za celý běh programu, pak se spouští jenom else (v kterém není "terminate" null)
 
             data1 = {"term": domena_text,"maxresults":10000,"media":0,"target":vybrane_hledani,"terminate":[None],"timeout":20}
 
-            response = session1.post(url=url, headers=headers, json=data1)
+            response = session1.post(url=url, headers=headers, json=data1)  # search request
 
 
             if response.status_code == 402:
@@ -351,7 +362,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             # "terminate" bude hodnota posledního id
 
             data1 = {"term": domena_text,"maxresults":10000,"media":0,"target":vybrane_hledani,"terminate":[hodnoty_K_pouziti1.predchozi_id],"timeout":20}
-            response = session1.post(url=url, headers=headers, json=data1)
+            response = session1.post(url=url, headers=headers, json=data1) # search request
             response = loads(response.text)
 
             hodnoty_K_pouziti1.predchozi_id = response["id"]
@@ -364,10 +375,9 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
         while True:
 
-            # data=data2 není potřeba, protože jsou parametry v URL
-            response2 = loads(session1.get(url=url_get, headers=headers).text)
+            # data= v requestu není potřeba, protože jsou parametry už v URL
 
-            # příklad response: {"selectors":[{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"info@cichnovabrno.cz","selectorvalueh":"info@cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"domov@cichnovabrno.cz","selectorvalueh":"domov@cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"elena.kneslova@cichnovabrno.cz","selectorvalueh":"elena.kneslova@cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"jaroslav.masek@cichnovabrno.cz","selectorvalueh":"jaroslav.masek@cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"helena.kvasnickova@cichnovabrno.cz","selectorvalueh":"helena.kvasnickova@cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"vladimir.simicek@cichnovabrno.cz","selectorvalueh":"vladimir.simicek@cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st023803@student.cichnovabrno.cz","selectorvalueh":"st023803@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st023567@student.cichnovabrno.cz","selectorvalueh":"st023567@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st022987@student.cichnovabrno.cz","selectorvalueh":"st022987@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st023320@student.cichnovabrno.cz","selectorvalueh":"st023320@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st022704@student.cichnovabrno.cz","selectorvalueh":"st022704@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st023977@student.cichnovabrno.cz","selectorvalueh":"st023977@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st023828@student.cichnovabrno.cz","selectorvalueh":"st023828@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st023257@student.cichnovabrno.cz","selectorvalueh":"st023257@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st024235@student.cichnovabrno.cz","selectorvalueh":"st024235@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"4d7f5e2a-0843-49ea-87bf-3f93aee91f8d@student.cichnovabrno.cz","selectorvalueh":"4d7f5e2a-0843-49ea-87bf-3f93aee91f8d@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st022921@student.cichnovabrno.cz","selectorvalueh":"st022921@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st024849@student.cichnovabrno.cz","selectorvalueh":"st024849@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st024189@student.cichnovabrno.cz","selectorvalueh":"st024189@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st023345@student.cichnovabrno.cz","selectorvalueh":"st023345@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st024720@student.cichnovabrno.cz","selectorvalueh":"st024720@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st025054@student.cichnovabrno.cz","selectorvalueh":"st025054@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st024326@student.cichnovabrno.cz","selectorvalueh":"st024326@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st023103@student.cichnovabrno.cz","selectorvalueh":"st023103@student.cichnovabrno.cz"},{"selectortype":1,"selectortypeh":"Email Address","selectorvalue":"st024502@student.cichnovabrno.cz","selectorvalueh":"st024502@student.cichnovabrno.cz"}],"status":1}
+            response2 = loads(session1.get(url=url_get, headers=headers).text)
 
             if response2["status"] == 0:
 
@@ -390,7 +400,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             elif response2["status"] == 2:
 
                 # moc stejných requestů
-                pass
+                break
 
             elif response2["status"] == 3:
 
@@ -450,8 +460,9 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
 
     def main(self):
-        # hlavní funkce která se spustí ostatní
-        # kontroluje správnost
+        # hlavní funkce která spustí ostatní
+        # na začátku kontroluje správnost
+        # requesty probíhají v Threadu
 
         odpoved = self.kontrola()
 
@@ -489,7 +500,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             return
 
         elif odpoved == 4:
-            # všechno v pořádku
+            # všechno v pořádku -> spuštění Threadu
 
             najit_domenu_grafika1.pushButton.setEnabled(False)
             najit_domenu_grafika1.comboBox.setEnabled(False)
@@ -522,8 +533,8 @@ if __name__ == "__main__":
     tabulka_data_grafika1.pushButton_3.clicked.connect(tabulka_data_grafika1.kopirovat_do_schranky) # kopírovat všechna data do schránky
     tabulka_data_grafika1.pushButton_4.clicked.connect(tabulka_data_grafika1.kopirovat_konkretni_radek) # kopírovat řádek do schránky
 
-    najit_domenu_grafika1.pushButton.clicked.connect(najit_domenu_grafika1.main)
-    najit_domenu_grafika1.pushButton_2.clicked.connect(najit_domenu_grafika1.nacteni_dat_do_tabulky)
+    najit_domenu_grafika1.pushButton.clicked.connect(najit_domenu_grafika1.main)    # vyhledat doménu
+    najit_domenu_grafika1.pushButton_2.clicked.connect(najit_domenu_grafika1.nacteni_dat_do_tabulky)    # načíst data do tabulky
 
     app.setQuitOnLastWindowClosed(False)
     app.lastWindowClosed.connect(tabulka_data_grafika1.about_to_quit_funkce)
