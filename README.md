@@ -18,5 +18,13 @@
 - Program také nebude fungovat, pokud bude aktivní vpn (stránka ji blokuje)
 <br/>
 
+# Použité knihovny:
+```
+pip install PyQt5
+pip install Requests
+pip install Pyperclip
+
+```
+
 # Náhled
 ![1](https://user-images.githubusercontent.com/82058894/177281168-076bfb22-4505-4656-91e0-45dd26bb7be5.png)
