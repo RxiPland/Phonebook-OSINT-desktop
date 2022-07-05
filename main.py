@@ -322,14 +322,13 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
             data1 = {"term": domena_text,"maxresults":10000,"media":0,"target":vybrane_hledani,"terminate":[None],"timeout":20}
 
-            response = session1.post(url=url, headers=headers, json=data1)  # search request
-           
         else:
 
             # "terminate" bude hodnota posledního id
 
             data1 = {"term": domena_text,"maxresults":10000,"media":0,"target":vybrane_hledani,"terminate":[hodnoty_K_pouziti1.predchozi_id],"timeout":20}
-            response = session1.post(url=url, headers=headers, json=data1) # search request
+        
+        response = session1.post(url=url, headers=headers, json=data1) # search request
 
 
         if response.status_code == 402:
