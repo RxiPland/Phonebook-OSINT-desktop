@@ -20,7 +20,7 @@ class file_dialog0(QDialog):
 
 
     def vyberLokace_save(self):
-        # otevře průzkumník souborů a nechá uživatele uložit data do souboru soubor
+        # otevře průzkumník souborů a nechá uživatele vybrat cestu, kam chce uložit soubor
 
         try:
             dlg = QFileDialog.getSaveFileName(self, 'Uložte hotový soubor', '','Textový soubor (*.txt);;JSON soubor (*.json);;Všechny soubory (*.*)')
