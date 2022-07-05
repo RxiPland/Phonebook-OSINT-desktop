@@ -81,7 +81,7 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
         vybrana_lokace = file_dialog1.vyberLokace_save()
 
         cesta_soubor = vybrana_lokace[0]
-        typ_souboru = moznosti[vybrana_lokace[1]]
+        typ_souboru = vybrana_lokace[1]
 
 
         content = hodnoty_K_pouziti1.hotove_hledani[0]
@@ -104,7 +104,7 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
             dohromady = []
 
             domena = hodnoty_K_pouziti1.hotove_hledani[1]
-            typ_hledani = hodnoty_K_pouziti1.hotove_hledani[2]
+            typ_hledani = moznosti[hodnoty_K_pouziti1.hotove_hledani[2]]
 
             for item in content:
 
