@@ -12,6 +12,20 @@ from threading import Thread
 from json import loads
 from pyperclip import copy
 
+
+class file_dialog0(QDialog):
+
+
+    def vyberLokace_save(self):
+        # otevře průzkumník souborů a nechá uživatele uložit data do souboru soubor
+
+        try:
+            dlg = QFileDialog.getSaveFileName(self, 'Uložte hotový soubor', '','Textový soubor (*.txt);;JSON soubor (*.json);;Všechny soubory (*.*)')
+            return dlg
+
+        except:
+            return "exited"
+
 class Hodnoty_K_pouziti0:
 
     # uchovává hodnoty
@@ -23,6 +37,7 @@ class Hodnoty_K_pouziti0:
         self.okno = 0               # int
         self.predchozi_id = ""      # str
         self.hotove_hledani = []    # list
+        self.cekani_mezi_requestama = 1 # int
 
 class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
@@ -32,6 +47,8 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
         self.setupUi(self)
 
     def tlacitko_nova_domena(self):
+
+        najit_domenu_grafika1.reset_hodnot()
 
         najit_domenu_grafika1.center_funkce()
         najit_domenu_grafika1.show()
@@ -59,11 +76,57 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
     def ulozit_do_souboru(self):
         # uloží data z tabulky do souboru
 
-        nactena_data = hodnoty_K_pouziti1.hotove_hledani[0]
+        vybrana_lokace = file_dialog1.vyberLokace_save()
 
-        f = open("ulozena_data.txt", "w")
-        f.writelines(nactena_data)
-        f.close()
+        cesta_soubor = vybrana_lokace[0]
+        typ_souboru = vybrana_lokace[1]
+
+
+        content = hodnoty_K_pouziti1.hotove_hledani[0]
+
+        if ".txt" in typ_souboru:
+
+            f = open(cesta_soubor, "w")
+
+            for i, item in enumerate(content):
+
+                if i == 0:
+                    f.writelines(item)
+                else:
+                    f.writelines("\n" + item)
+
+            f.close()
+
+        elif ".json" in typ_souboru:
+
+            dohromady = []
+
+            domena = hodnoty_K_pouziti1.hotove_hledani[1]
+            typ_hledani = hodnoty_K_pouziti1.hotove_hledani[2]
+
+            for item in content:
+
+                sablona = {"Content": item, "Domena": domena, "Typ": typ_hledani}
+                dohromady.append(sablona)
+            
+            finalni_json = {"Data": dohromady}
+
+            with open(cesta_soubor, "w") as f:
+
+                f.write(str(finalni_json))
+
+
+            with open(cesta_soubor, "rw") as f:
+                obsah = str(f.read())
+
+                obsah = obsah.replace("\'", "\"")
+
+                f.write(obsah)
+
+
+        else:
+
+            return
 
 
     def kopirovat_do_schranky(self):
@@ -72,10 +135,31 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
         nactena_data = hodnoty_K_pouziti1.hotove_hledani[0]
         finalni_string = ""
 
-        for item in nactena_data:
-            finalni_string += item + "\n" 
+        for i, item in enumerate(nactena_data):
+            finalni_string += item + "\n"
+
+            if i == 0:
+                finalni_string += item
+
+            else:
+                finalni_string += "\n" + item
+
 
         copy(finalni_string)
+
+    
+    def kopirovat_konkretni_radek(self):
+
+        # kopírovat vybraný řádek
+
+        vybrany_radek = tabulka_data_grafika1.tableWidget.currentRow()
+
+        if vybrany_radek == -1:
+            pass
+        else:
+            content = hodnoty_K_pouziti1.hotove_hledani[0][vybrany_radek]
+
+            copy(content)
 
 class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
@@ -86,7 +170,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
     def reset_hodnot(self):
 
-        # vyresetuje hodnoty v polích v okně najit_domenu.py
+        # vyresetuje hodnoty do původního stavu v polích v okně najit_domenu.py
 
         najit_domenu_grafika1.label.setHidden(False)
         najit_domenu_grafika1.label_2.setHidden(True)
@@ -95,11 +179,17 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
         najit_domenu_grafika1.lineEdit.clear()
         najit_domenu_grafika1.lineEdit.setStyleSheet("background-color: ")
         najit_domenu_grafika1.lineEdit.setClearButtonEnabled(True)
+        najit_domenu_grafika1.lineEdit.setReadOnly(False)
 
         najit_domenu_grafika1.pushButton.setHidden(False)
         najit_domenu_grafika1.pushButton_2.setHidden(True)
 
+        najit_domenu_grafika1.pushButton.setEnabled(True)
+        najit_domenu_grafika1.pushButton_2.setEnabled(True)
+
         najit_domenu_grafika1.comboBox.setHidden(False)
+        najit_domenu_grafika1.comboBox.setEnabled(True)
+        najit_domenu_grafika1.comboBox.setCurrentIndex(0)
 
     def nacteni_dat_do_tabulky(self):
 
@@ -121,17 +211,20 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
             for row in ziskane_informace:
 
-                self.tableWidget.setRowCount(aktualni_radek+1)
-                self.tableWidget.setItem(aktualni_radek, 0, QtWidgets.QTableWidgetItem(row))
+                tabulka_data_grafika1.tableWidget.setRowCount(aktualni_radek+1)
+                tabulka_data_grafika1.tableWidget.setItem(aktualni_radek, 0, QtWidgets.QTableWidgetItem(row))
                 aktualni_radek += 1
         
         else:
+
+            tabulka_data_grafika1.tableWidget.setRowCount(0)
             
             tabulka_data_grafika1.label_2.setText("Nebyla nalezena žádná data")
             tabulka_data_grafika1.label_2.setHidden(False)
 
+        informace_text = str(len(ziskane_informace)) + " " + moznosti[typ_hledani]
 
-        tabulka_data_grafika1.lineEdit.setText(len(ziskane_informace), moznosti[typ_hledani])
+        tabulka_data_grafika1.lineEdit.setText(informace_text)
         tabulka_data_grafika1.lineEdit.setHidden(False)
         tabulka_data_grafika1.lineEdit_2.setText(domena_text)
         tabulka_data_grafika1.lineEdit_2.setHidden(False)
@@ -147,14 +240,9 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
         najit_domenu_grafika1.close()
         hodnoty_K_pouziti1.okno = 0
 
-
-    def vyhledat(self):
-        # funkce která komunikuje s webovou stránkou
-
-        start = time.time()
-
-        headers= {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.115 Safari/537.36"}
-        moznosti = {"Subdomény": 1, "Emailové adresy": 2, "Adresáře": 3}
+    
+    def nalezeni_API_klice(self, headers):
+        
 
         API_KEY = "077424c6-7a26-410e-9269-c9ac546886a4"    # defaultní
 
@@ -172,6 +260,21 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
                     API_KEY = row[1]
 
                     break
+
+        return API_KEY
+
+
+    def vyhledat(self):
+        # funkce která komunikuje s webovou stránkou
+
+        start = time.time()
+
+        headers= {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.115 Safari/537.36"}
+        moznosti = {"Subdomény": 1, "Emailové adresy": 2, "Adresáře": 3}
+
+
+        API_KEY = self.nalezeni_API_klice(headers=headers)
+
 
         url = "https://public.intelx.io/phonebook/search?k=" + API_KEY
 
@@ -192,6 +295,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             # pokud se hledá poprvé od spuštění programu, id bude prázdné (dosadí se null)
 
             data1 = {"term": domena_text,"maxresults":10000,"media":0,"target":vybrane_hledani,"terminate":[None],"timeout":20}
+
             response = session1.post(url=url, headers=headers, json=data1)
 
 
@@ -242,7 +346,9 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
 
         url_get = "https://public.intelx.io/phonebook/search/result?k=" + API_KEY + "&id=" + hodnoty_K_pouziti1.predchozi_id  +"&limit=10000"
-        list_ziskanych_dat = []        
+        list_ziskanych_dat = []
+
+        time.sleep(hodnoty_K_pouziti1.cekani_mezi_requestama)        
 
         while True:
 
@@ -279,7 +385,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
                 # prázdné
                 pass
 
-            time.sleep(1)
+            time.sleep(hodnoty_K_pouziti1.cekani_mezi_requestama)   # defaultně 1s
 
         end = time.time()
 
@@ -289,7 +395,6 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
         najit_domenu_grafika1.label.setHidden(True)
         najit_domenu_grafika1.label_2.setHidden(True)
 
-        #najit_domenu_grafika1.lineEdit.setReadOnly(True)   # NEPOUŽÍVAT - DĚLÁ PROBLÉM (kvůli Threadu)
 
         najit_domenu_grafika1.lineEdit.setText("Hledání bylo dokončeno.")
         najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
@@ -379,6 +484,10 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
             hodnoty_K_pouziti1.hotove_hledani = []
 
+            najit_domenu_grafika1.lineEdit.setReadOnly(True)
+            najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
+
+
             t = Thread(target=najit_domenu_grafika1.vyhledat)
             t.start()
 
@@ -391,13 +500,15 @@ if __name__ == "__main__":
     tabulka_data_grafika1 = tabulka_data_grafika0()
     najit_domenu_grafika1 = najit_domenu_grafika0()
     hodnoty_K_pouziti1 = Hodnoty_K_pouziti0()
+    file_dialog1 = file_dialog0()
 
     tabulka_data_grafika1.show()
+
 
     tabulka_data_grafika1.pushButton.clicked.connect(tabulka_data_grafika1.tlacitko_nova_domena)  # najít novou doménu
     tabulka_data_grafika1.pushButton_2.clicked.connect(tabulka_data_grafika1.ulozit_do_souboru) # uložit data do souboru
     tabulka_data_grafika1.pushButton_3.clicked.connect(tabulka_data_grafika1.kopirovat_do_schranky) # kopírovat všechna data do schránky
-    #tabulka_data_grafika1.pushButton_4.clicked.connect(tabulka_data_grafika1.) # kopírovat řádek do schránky
+    tabulka_data_grafika1.pushButton_4.clicked.connect(tabulka_data_grafika1.kopirovat_konkretni_radek) # kopírovat řádek do schránky
 
     najit_domenu_grafika1.pushButton.clicked.connect(najit_domenu_grafika1.main)
     najit_domenu_grafika1.pushButton_2.clicked.connect(najit_domenu_grafika1.nacteni_dat_do_tabulky)
