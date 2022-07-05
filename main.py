@@ -88,22 +88,7 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         content = hodnoty_K_pouziti1.hotove_hledani[0]
 
-        if ".txt" in typ_souboru:
-
-            # uživatel vybral txt
-
-            f = open(cesta_soubor, "w")
-
-            for i, item in enumerate(content):
-
-                if i == 0:
-                    f.writelines(item)
-                else:
-                    f.writelines("\n" + item)
-
-            f.close()
-
-        elif ".json" in typ_souboru:
+        if ".json" in typ_souboru:
 
             # uživatel vybral json
 
@@ -140,9 +125,21 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
                 obsah = obsah.replace("\'", "\"")
 
                 f.write(obsah)
+
         else:
 
-            return
+            # uživatel vybral txt
+
+            f = open(cesta_soubor, "w")
+
+            for i, item in enumerate(content):
+
+                if i == 0:
+                    f.writelines(item)
+                else:
+                    f.writelines("\n" + item)
+
+            f.close()
 
 
     def kopirovat_do_schranky(self):
