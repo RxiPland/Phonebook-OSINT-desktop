@@ -130,16 +130,14 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
             # uživatel vybral txt
 
-            f = open(cesta_soubor, "w")
+            with open(cesta_soubor, "w") as f:
 
-            for i, item in enumerate(content):
+                for i, item in enumerate(content):
 
-                if i == 0:
-                    f.writelines(item)
-                else:
-                    f.writelines("\n" + item)
-
-            f.close()
+                    if i == 0:
+                        f.writelines(item)
+                    else:
+                        f.writelines("\n" + item)
 
 
     def kopirovat_do_schranky(self):
