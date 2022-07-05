@@ -186,7 +186,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
         # vyresetuje hodnoty do původního stavu v polích v okně najit_domenu.py
 
         najit_domenu_grafika1.label.setHidden(False)
-        najit_domenu_grafika1.label_2.setHidden(True)
+        najit_domenu_grafika1.label_2.setHidden(False)
         najit_domenu_grafika1.label_3.setHidden(True)
 
         najit_domenu_grafika1.lineEdit.clear()
