@@ -323,52 +323,48 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             data1 = {"term": domena_text,"maxresults":10000,"media":0,"target":vybrane_hledani,"terminate":[None],"timeout":20}
 
             response = session1.post(url=url, headers=headers, json=data1)  # search request
-
-
-            if response.status_code == 402:
-                
-                najit_domenu_grafika1.lineEdit.setStyleSheet("background-color: red")
-                najit_domenu_grafika1.lineEdit.setText("Byl přesáhnut denní limit požadavků!")
-                najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
-                najit_domenu_grafika1.label.setHidden(True)
-                najit_domenu_grafika1.label_2.setHidden(True)
-
-                end = time.time()
-                najit_domenu_grafika1.label_3.setHidden(False)
-                doba = "Doba trvání: " + str(round(end-start,5)) + " vteřin"
-                najit_domenu_grafika1.label_3.setText(doba)
-
-                return "chyba"
-
-            elif response.status_code == 403:
-                
-                najit_domenu_grafika1.lineEdit.setStyleSheet("background-color: red")
-                najit_domenu_grafika1.lineEdit.setText("IP adresa je na black listu (zkuste vypnout VPN)")
-                najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
-                najit_domenu_grafika1.label.setHidden(True)
-                najit_domenu_grafika1.label_2.setHidden(True)
-
-                end = time.time()
-                najit_domenu_grafika1.label_3.setHidden(False)
-                doba = "Doba trvání: " + str(round(end-start,5)) + " vteřin"
-                najit_domenu_grafika1.label_3.setText(doba)
-
-                return "chyba"
-
-            elif response.status_code == 200:
-
-                hodnoty_K_pouziti1.predchozi_id = loads(response.text)["id"]
            
-
         else:
 
             # "terminate" bude hodnota posledního id
 
             data1 = {"term": domena_text,"maxresults":10000,"media":0,"target":vybrane_hledani,"terminate":[hodnoty_K_pouziti1.predchozi_id],"timeout":20}
             response = session1.post(url=url, headers=headers, json=data1) # search request
-            response = loads(response.text)
 
-            hodnoty_K_pouziti1.predchozi_id = response["id"]
+
+        if response.status_code == 402:
+            
+            najit_domenu_grafika1.lineEdit.setStyleSheet("background-color: red")
+            najit_domenu_grafika1.lineEdit.setText("Byl přesáhnut denní limit požadavků!")
+            najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
+            najit_domenu_grafika1.label.setHidden(True)
+            najit_domenu_grafika1.label_2.setHidden(True)
+
+            end = time.time()
+            najit_domenu_grafika1.label_3.setHidden(False)
+            doba = "Doba trvání: " + str(round(end-start,5)) + " vteřin"
+            najit_domenu_grafika1.label_3.setText(doba)
+
+            return "chyba"
+
+        elif response.status_code == 403:
+            
+            najit_domenu_grafika1.lineEdit.setStyleSheet("background-color: red")
+            najit_domenu_grafika1.lineEdit.setText("IP adresa je na black listu (zkuste vypnout VPN)")
+            najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
+            najit_domenu_grafika1.label.setHidden(True)
+            najit_domenu_grafika1.label_2.setHidden(True)
+
+            end = time.time()
+            najit_domenu_grafika1.label_3.setHidden(False)
+            doba = "Doba trvání: " + str(round(end-start,5)) + " vteřin"
+            najit_domenu_grafika1.label_3.setText(doba)
+
+            return "chyba"
+
+        elif response.status_code == 200:
+
+            hodnoty_K_pouziti1.predchozi_id = loads(response.text)["id"]
 
 
         url_get = "https://public.intelx.io/phonebook/search/result?k=" + API_KEY + "&id=" + hodnoty_K_pouziti1.predchozi_id  +"&limit=10000"
