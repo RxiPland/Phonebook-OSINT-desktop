@@ -53,6 +53,10 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         webbrowser.open_new_tab("https://phonebook.cz/")
 
+    def otevrit_odkaz2(self):
+
+        webbrowser.open_new_tab("https://haveibeenpwned.com/")
+
     def tlacitko_nova_domena(self):
 
         najit_domenu_grafika1.reset_hodnot()
@@ -460,7 +464,6 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             najit_domenu_grafika1.label_3.setHidden(False)
             doba = "Doba vyhledávání: " + str(round(end-start,5)) + " vteřin"
             najit_domenu_grafika1.label_3.setText(doba)
-            
         
             hodnoty_K_pouziti1.hotove_hledani = [list_ziskanych_dat, domena_text, vybrane_hledani]  # uložení dat do classy
 
@@ -565,13 +568,18 @@ if __name__ == "__main__":
 
     tabulka_data_grafika1.label_3.linkActivated.connect(tabulka_data_grafika1.otevrit_odkaz)    # otevře odkaz na phonebook.cz
 
+
     tabulka_data_grafika1.pushButton.clicked.connect(tabulka_data_grafika1.tlacitko_nova_domena)  # najít novou doménu
     tabulka_data_grafika1.pushButton_2.clicked.connect(tabulka_data_grafika1.ulozit_do_souboru) # uložit data do souboru
     tabulka_data_grafika1.pushButton_3.clicked.connect(tabulka_data_grafika1.kopirovat_do_schranky) # kopírovat všechna data do schránky
     tabulka_data_grafika1.pushButton_4.clicked.connect(tabulka_data_grafika1.kopirovat_konkretni_radek) # kopírovat řádek do schránky
 
+    najit_domenu_grafika1.lineEdit.returnPressed.connect(najit_domenu_grafika1.main) # vyhledat doménu (zmáčknutý enter)
     najit_domenu_grafika1.pushButton.clicked.connect(najit_domenu_grafika1.main)    # vyhledat doménu
     najit_domenu_grafika1.pushButton_2.clicked.connect(najit_domenu_grafika1.nacteni_dat_do_tabulky)    # načíst data do tabulky
+
+    tabulka_data_grafika1.actionPhonebook_cz.triggered.connect(tabulka_data_grafika1.otevrit_odkaz)
+    tabulka_data_grafika1.actionHaveibeenpwned_com.triggered.connect(tabulka_data_grafika1.otevrit_odkaz2)
 
     app.setQuitOnLastWindowClosed(False)
     app.lastWindowClosed.connect(tabulka_data_grafika1.about_to_quit_funkce)

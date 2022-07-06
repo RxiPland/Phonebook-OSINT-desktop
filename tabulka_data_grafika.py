@@ -20,7 +20,7 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         MainWindow.setWindowFlag(QtCore.Qt.WindowMaximizeButtonHint, False)
 
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(679, 521)
+        MainWindow.resize(679, 542)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(10)
@@ -103,6 +103,21 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+        self.menuBar = QtWidgets.QMenuBar(MainWindow)
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 679, 21))
+        self.menuBar.setObjectName("menuBar")
+
+        self.menuOdkazy = QtWidgets.QMenu(self.menuBar)
+        self.menuOdkazy.setObjectName("menuOdkazy")
+        MainWindow.setMenuBar(self.menuBar)
+        self.actionPhonebook_cz = QtWidgets.QAction(MainWindow)
+        self.actionPhonebook_cz.setObjectName("actionPhonebook_cz")
+        self.actionHaveibeenpwned_com = QtWidgets.QAction(MainWindow)
+        self.actionHaveibeenpwned_com.setObjectName("actionHaveibeenpwned_com")
+        self.menuOdkazy.addAction(self.actionPhonebook_cz)
+        self.menuOdkazy.addAction(self.actionHaveibeenpwned_com)
+        self.menuBar.addAction(self.menuOdkazy.menuAction())
+
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -120,3 +135,6 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.label_3.setText(_translate("MainWindow", "<a href='https://phonebook.cz/'>Používaný web</a>"))
         self.lineEdit.setText(_translate("MainWindow", "X emailů/ subdomén/ adresářů"))
         self.lineEdit_2.setText(_translate("MainWindow", "[Doména]"))
+        self.menuOdkazy.setTitle(_translate("MainWindow", "Odkazy"))
+        self.actionPhonebook_cz.setText(_translate("MainWindow", "Phonebook.cz"))
+        self.actionHaveibeenpwned_com.setText(_translate("MainWindow", "Haveibeenpwned.com"))
