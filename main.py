@@ -270,7 +270,13 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
         if hodnoty_K_pouziti1.predchozi_id == "":
 
-            phonebook_html = get("https://phonebook.cz", headers=headers).text
+            try:
+
+                phonebook_html = get("https://phonebook.cz", headers=headers).text
+
+            except:
+
+                return "nefunguje_internet"
 
             for row in phonebook_html:
 
@@ -284,6 +290,21 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
                     break
 
         return API_KEY
+
+    def zobrazit_error(self, start: float, message: str):
+
+        # funkce, která dosadí do line editu text s chybou, označí ho červeně a ukáže dobu trvání
+
+        najit_domenu_grafika1.lineEdit.setStyleSheet("background-color: red")
+        najit_domenu_grafika1.lineEdit.setText(message)
+        najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
+        najit_domenu_grafika1.label.setHidden(True)
+        najit_domenu_grafika1.label_2.setHidden(True)
+
+        end = time.time()
+        najit_domenu_grafika1.label_3.setHidden(False)
+        doba = "Doba trvání: " + str(round(end-start,5)) + " vteřin"
+        najit_domenu_grafika1.label_3.setText(doba)
 
 
     def vyhledat(self):
@@ -300,6 +321,21 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
         API_KEY = self.nalezeni_API_klice(headers=headers)
 
+        if API_KEY == "nefunguje_internet":
+
+            try:
+
+                get("https://google.com")
+
+                najit_domenu_grafika1.zobrazit_error(start, "Stránka https://phonebook.cz není dostupná! (výpadek / údržba)")
+
+                return "chyba_phonebook.cz"
+
+            except:
+
+                najit_domenu_grafika1.zobrazit_error(start, "Nelze se připojit k internetu!")
+
+                return "chyba_internet"
 
         url = "https://public.intelx.io/phonebook/search?k=" + API_KEY
 
@@ -328,103 +364,105 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
             data1 = {"term": domena_text,"maxresults":10000,"media":0,"target":vybrane_hledani,"terminate":[hodnoty_K_pouziti1.predchozi_id],"timeout":20}
         
-        response = session1.post(url=url, headers=headers, json=data1) # search request
+        try:
+
+            response = session1.post(url=url, headers=headers, json=data1) # search request
+
+        except:
+
+            try:
+
+                # zkusí se jestli funguje uživatelův internet -> udělá se request na google
+
+                get("https://google.com")
+
+                najit_domenu_grafika1.zobrazit_error(start, "Stránka https://public.intelx.io není dostupná! (výpadek / údržba)")
+
+                return "chyba_public.intelx.io"
+
+            except:
+
+                najit_domenu_grafika1.zobrazit_error(start, "Nelze se připojit k internetu!")
+
+                return "chyba_internet"
 
 
         if response.status_code == 402:
             
-            najit_domenu_grafika1.lineEdit.setStyleSheet("background-color: red")
-            najit_domenu_grafika1.lineEdit.setText("Byl přesáhnut denní limit požadavků!")
-            najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
-            najit_domenu_grafika1.label.setHidden(True)
-            najit_domenu_grafika1.label_2.setHidden(True)
+            najit_domenu_grafika1.zobrazit_error(start, "Byl přesáhnut denní limit požadavků!")
 
-            end = time.time()
-            najit_domenu_grafika1.label_3.setHidden(False)
-            doba = "Doba trvání: " + str(round(end-start,5)) + " vteřin"
-            najit_domenu_grafika1.label_3.setText(doba)
-
-            return "chyba"
+            return "chyba402"
 
         elif response.status_code == 403:
             
-            najit_domenu_grafika1.lineEdit.setStyleSheet("background-color: red")
-            najit_domenu_grafika1.lineEdit.setText("IP adresa je na black listu (zkuste vypnout VPN)")
-            najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
-            najit_domenu_grafika1.label.setHidden(True)
-            najit_domenu_grafika1.label_2.setHidden(True)
+            najit_domenu_grafika1.zobrazit_error(start, "IP adresa je na black listu (zkuste vypnout VPN)")
 
-            end = time.time()
-            najit_domenu_grafika1.label_3.setHidden(False)
-            doba = "Doba trvání: " + str(round(end-start,5)) + " vteřin"
-            najit_domenu_grafika1.label_3.setText(doba)
-
-            return "chyba"
+            return "chyba403"
 
         elif response.status_code == 200:
 
             hodnoty_K_pouziti1.predchozi_id = loads(response.text)["id"]
 
 
-        url_get = "https://public.intelx.io/phonebook/search/result?k=" + API_KEY + "&id=" + hodnoty_K_pouziti1.predchozi_id  +"&limit=10000"
-        list_ziskanych_dat = []
+            url_get = "https://public.intelx.io/phonebook/search/result?k=" + API_KEY + "&id=" + hodnoty_K_pouziti1.predchozi_id  +"&limit=10000"
+            list_ziskanych_dat = []
 
-        time.sleep(hodnoty_K_pouziti1.cekani_mezi_requestama)        
+            time.sleep(hodnoty_K_pouziti1.cekani_mezi_requestama)        
 
-        while True:
+            while True:
 
-            # data= v requestu není potřeba, protože jsou parametry už v URL
+                # data= v requestu není potřeba, protože jsou parametry už v URL
 
-            response2 = loads(session1.get(url=url_get, headers=headers).text)
+                response2 = loads(session1.get(url=url_get, headers=headers).text)
 
-            if response2["status"] == 0:
+                if response2["status"] == 0:
 
-                # příchozí data
-                list_adres = response2["selectors"]
+                    # příchozí data
+                    list_adres = response2["selectors"]
 
-                for item in list_adres:
-                    list_ziskanych_dat.append(item["selectorvalue"])
+                    for item in list_adres:
+                        list_ziskanych_dat.append(item["selectorvalue"])
 
-            elif response2["status"] == 1:
+                elif response2["status"] == 1:
 
-                # konec
-                list_adres = response2["selectors"]
+                    # konec
+                    list_adres = response2["selectors"]
 
-                for item in list_adres:
-                    list_ziskanych_dat.append(item["selectorvalue"])
+                    for item in list_adres:
+                        list_ziskanych_dat.append(item["selectorvalue"])
 
-                break
+                    break
 
-            elif response2["status"] == 2:
+                elif response2["status"] == 2:
 
-                # moc stejných requestů
-                break
+                    # moc stejných requestů
+                    break
 
-            elif response2["status"] == 3:
+                elif response2["status"] == 3:
 
-                # prázdné
-                pass
+                    # prázdné
+                    pass
 
-            time.sleep(hodnoty_K_pouziti1.cekani_mezi_requestama)   # defaultně 1s
+                time.sleep(hodnoty_K_pouziti1.cekani_mezi_requestama)   # defaultně 1s
 
-        end = time.time()
+            end = time.time()
 
-        najit_domenu_grafika1.pushButton_2.setHidden(False)
-        najit_domenu_grafika1.pushButton.setHidden(True)
-        najit_domenu_grafika1.comboBox.setHidden(True)
-        najit_domenu_grafika1.label.setHidden(True)
-        najit_domenu_grafika1.label_2.setHidden(True)
+            najit_domenu_grafika1.pushButton_2.setHidden(False)
+            najit_domenu_grafika1.pushButton.setHidden(True)
+            najit_domenu_grafika1.comboBox.setHidden(True)
+            najit_domenu_grafika1.label.setHidden(True)
+            najit_domenu_grafika1.label_2.setHidden(True)
 
 
-        najit_domenu_grafika1.lineEdit.setText("Hledání bylo dokončeno.")
-        najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
-        najit_domenu_grafika1.lineEdit.setStyleSheet("background-color: green")
-        najit_domenu_grafika1.label_3.setHidden(False)
-        doba = "Doba vyhledávání: " + str(round(end-start,5)) + " vteřin"
-        najit_domenu_grafika1.label_3.setText(doba)
+            najit_domenu_grafika1.lineEdit.setText("Hledání bylo dokončeno.")
+            najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
+            najit_domenu_grafika1.lineEdit.setStyleSheet("background-color: green")
+            najit_domenu_grafika1.label_3.setHidden(False)
+            doba = "Doba vyhledávání: " + str(round(end-start,5)) + " vteřin"
+            najit_domenu_grafika1.label_3.setText(doba)
+            
         
-    
-        hodnoty_K_pouziti1.hotove_hledani = [list_ziskanych_dat, domena_text, vybrane_hledani]  # uložení dat do classy
+            hodnoty_K_pouziti1.hotove_hledani = [list_ziskanych_dat, domena_text, vybrane_hledani]  # uložení dat do classy
 
     def kontrola(self):
 
@@ -508,7 +546,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             najit_domenu_grafika1.lineEdit.setReadOnly(True)
             najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
 
-
+            # funkce hledání informací
             t = Thread(target=najit_domenu_grafika1.vyhledat)
             t.start()
 
@@ -525,7 +563,7 @@ if __name__ == "__main__":
 
     tabulka_data_grafika1.show()
 
-    tabulka_data_grafika1.label_3.linkActivated.connect(tabulka_data_grafika1.otevrit_odkaz)
+    tabulka_data_grafika1.label_3.linkActivated.connect(tabulka_data_grafika1.otevrit_odkaz)    # otevře odkaz na phonebook.cz
 
     tabulka_data_grafika1.pushButton.clicked.connect(tabulka_data_grafika1.tlacitko_nova_domena)  # najít novou doménu
     tabulka_data_grafika1.pushButton_2.clicked.connect(tabulka_data_grafika1.ulozit_do_souboru) # uložit data do souboru
