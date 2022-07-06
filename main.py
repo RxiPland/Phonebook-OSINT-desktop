@@ -10,8 +10,10 @@ from najit_domenu_grafika import Ui_MainWindow_najit_domenu_grafika
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QFileDialog, QDialog
 from requests import Session, get
+import datetime
 import time
 from threading import Thread
+from os.path import exists
 from json import loads
 from pyperclip import copy
 import webbrowser
@@ -62,9 +64,57 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
         webbrowser.open_new_tab("https://email-checker.net/")
 
 
+    def otevrit_odkaz_tabulka(self):
+
+        row = tabulka_data_grafika1.tableWidget.currentRow()
+
+        content = str(tabulka_data_grafika1.tableWidget.item(row, 0).text())
+
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Question)
+        msgBox.setWindowTitle("Oznámení")
+        msgBox.setText("Opravdu chcete otevřít odkaz: " + content )
+        msgBox.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
+        buttonY = msgBox.button(QMessageBox.Yes)
+        buttonY.setText("Ano")
+        buttonN = msgBox.button(QMessageBox.No)
+        buttonN.setText("Zrušit")
+
+        returnValue = msgBox.exec()
+
+        if returnValue == QMessageBox.Yes:
+
+            webbrowser.open_new_tab(content)
+
+        else:
+
+            return
+
+
     def tlacitko_nova_domena(self):
 
         najit_domenu_grafika1.reset_hodnot()
+
+        now = datetime.datetime.now()
+        sekundy = int(now.hour*60*60 + now.minute*60 + now.second)  # čas v sekundách
+
+        if exists("zbyva_pokusu.txt"):
+
+            with open("zbyva_pokusu.txt", "r") as f:
+
+                pocet_pokusu = loads(f.read())["Zbyva_pokusu"]
+
+                najit_domenu_grafika1.label_4.setText("Zbývá " + str(pocet_pokusu) + " hledání")
+
+        else:
+
+            with open("zbyva_pokusu.txt", "w") as f:
+
+                pocet_pokusu = '{\"Zbyva_pokusu\": 24, \"Posledni_hledani_sec\":' + str(sekundy) + '}'   # 24 pokusů / den
+
+                f.write(pocet_pokusu)
+
+                najit_domenu_grafika1.label_4.setText("Zbývá 24 hledání")
 
         najit_domenu_grafika1.center_funkce()
         najit_domenu_grafika1.show()
@@ -122,9 +172,12 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
                 # uložení dat do souboru
 
-                f.write(str(finalni_json))
+                string_json = str(finalni_json).replace("\'", "\"")
+
+                f.write(string_json)
 
 
+            '''
             with open(cesta_soubor, "r") as f:
 
                 # znovu načtení souboru
@@ -139,6 +192,8 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
                 obsah = obsah.replace("\'", "\"")
 
                 f.write(obsah)
+
+            '''
 
         else:
 
@@ -400,6 +455,18 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             
             najit_domenu_grafika1.zobrazit_error(start, "Byl přesáhnut denní limit požadavků!")
 
+            with open("zbyva_pokusu.txt", "w") as f:
+
+                now = datetime.datetime.now()
+                sekundy = int(now.hour*60*60 + now.minute*60 + now.second)  # čas v sekundách
+
+                pocet_pokusu = '{\"Zbyva_pokusu\": 0, \"Posledni_hledani_sec\":' + str(sekundy) + '}'
+
+                f.write(pocet_pokusu)
+
+                najit_domenu_grafika1.label_4.setText("Zbývá 0 hledání")
+
+
             return "chyba402"
 
         elif response.status_code == 403:
@@ -469,6 +536,31 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             najit_domenu_grafika1.label_3.setHidden(False)
             doba = "Doba vyhledávání: " + str(round(end-start,5)) + " vteřin"
             najit_domenu_grafika1.label_3.setText(doba)
+
+
+            now = datetime.datetime.now()
+            sekundy = int(now.hour*60*60 + now.minute*60 + now.second)
+
+            if exists("zbyva_pokusu.txt"):
+
+                with open("zbyva_pokusu.txt", "r") as f:
+
+                    pocet_pokusu = loads(f.read())["Zbyva_pokusu"]  # dictionary
+
+
+                with open("zbyva_pokusu.txt", "w") as f:
+
+                    pocet_pokusu = '{\"Zbyva_pokusu\":' + str(pocet_pokusu-1) + ', \"Posledni_hledani_sec\":' + str(sekundy) + '}'
+
+                    f.write(pocet_pokusu)
+
+            else:
+
+                with open("zbyva_pokusu.txt", "w") as f:
+
+                    pocet_pokusu = '{\"Zbyva_pokusu\": 23, \"Posledni_hledani_sec\":' + str(sekundy) + '}'   # 24 pokusů / den;  jeden request už proběhl, tudíž 23
+
+                    f.write(pocet_pokusu)
 
         
             hodnoty_K_pouziti1.hotove_hledani = [list_ziskanych_dat, domena_text, vybrane_hledani]  # uložení dat do classy
@@ -587,6 +679,8 @@ if __name__ == "__main__":
     tabulka_data_grafika1.actionPhonebook_cz.triggered.connect(tabulka_data_grafika1.otevrit_odkaz)     # otevře odkaz phonebook.cz
     tabulka_data_grafika1.actionHaveibeenpwned_com.triggered.connect(tabulka_data_grafika1.otevrit_odkaz2) # otevře odkaz haveibeenpwned.com
     tabulka_data_grafika1.actionEmail_checker_net.triggered.connect(tabulka_data_grafika1.otevrit_odkaz3) # otevře odkaz email-checker.net
+
+    tabulka_data_grafika1.tableWidget.cellClicked.connect(tabulka_data_grafika1.otevrit_odkaz_tabulka)
 
     app.setQuitOnLastWindowClosed(False)
     app.lastWindowClosed.connect(tabulka_data_grafika1.about_to_quit_funkce)
