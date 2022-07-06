@@ -95,22 +95,34 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         najit_domenu_grafika1.reset_hodnot()
 
-        now = datetime.datetime.now()
-        sekundy = int(now.hour*60*60 + now.minute*60 + now.second)  # čas v sekundách
+        den = datetime.datetime.now().day
 
         if exists("zbyva_pokusu.txt"):
 
             with open("zbyva_pokusu.txt", "r") as f:
 
-                pocet_pokusu = loads(f.read())["Zbyva_pokusu"]
+                nactena_data = loads(f.read())
+                pocet_pokusu = nactena_data["Zbyva_pokusu"]
+                posledni_hledani = int(nactena_data["Posledni_hledani"])
 
-                najit_domenu_grafika1.label_4.setText("Zbývá " + str(pocet_pokusu) + " hledání")
+                if posledni_hledani != den:  # vyresetovány pokusy (webová stránka)
+
+                    with open("zbyva_pokusu.txt", "w") as f:
+
+                        pocet_pokusu = '{\"Zbyva_pokusu\": 24, \"Posledni_hledani\": ' + str(den) + '}'   # 24 pokusů / den
+                        f.write(pocet_pokusu)
+
+                        najit_domenu_grafika1.label_4.setText("Zbývá 24 hledání")
+
+                else:
+
+                    najit_domenu_grafika1.label_4.setText("Zbývá " + str(pocet_pokusu) + " hledání")
 
         else:
 
             with open("zbyva_pokusu.txt", "w") as f:
 
-                pocet_pokusu = '{\"Zbyva_pokusu\": 24, \"Posledni_hledani_sec\":' + str(sekundy) + '}'   # 24 pokusů / den
+                pocet_pokusu = '{\"Zbyva_pokusu\": 24, \"Posledni_hledani\": ' + str(den) + '}'   # 24 pokusů / den
 
                 f.write(pocet_pokusu)
 
@@ -457,10 +469,9 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
             with open("zbyva_pokusu.txt", "w") as f:
 
-                now = datetime.datetime.now()
-                sekundy = int(now.hour*60*60 + now.minute*60 + now.second)  # čas v sekundách
+                den = datetime.datetime.now().day
 
-                pocet_pokusu = '{\"Zbyva_pokusu\": 0, \"Posledni_hledani_sec\":' + str(sekundy) + '}'
+                pocet_pokusu = '{\"Zbyva_pokusu\": 0, \"Posledni_hledani\": ' + str(den) + '}'
 
                 f.write(pocet_pokusu)
 
@@ -538,8 +549,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             najit_domenu_grafika1.label_3.setText(doba)
 
 
-            now = datetime.datetime.now()
-            sekundy = int(now.hour*60*60 + now.minute*60 + now.second)
+            den = datetime.datetime.now().day
 
             if exists("zbyva_pokusu.txt"):
 
@@ -550,7 +560,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
                 with open("zbyva_pokusu.txt", "w") as f:
 
-                    pocet_pokusu = '{\"Zbyva_pokusu\":' + str(pocet_pokusu-1) + ', \"Posledni_hledani_sec\":' + str(sekundy) + '}'
+                    pocet_pokusu = '{\"Zbyva_pokusu\":' + str(pocet_pokusu-1) + ', \"Posledni_hledani\": ' + str(den) + '}'
 
                     f.write(pocet_pokusu)
 
@@ -558,7 +568,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
                 with open("zbyva_pokusu.txt", "w") as f:
 
-                    pocet_pokusu = '{\"Zbyva_pokusu\": 23, \"Posledni_hledani_sec\":' + str(sekundy) + '}'   # 24 pokusů / den;  jeden request už proběhl, tudíž 23
+                    pocet_pokusu = '{\"Zbyva_pokusu\": 23, \"Posledni_hledani\": ' + str(den) + '}'   # 24 pokusů / den;  jeden request už proběhl, tudíž 23
 
                     f.write(pocet_pokusu)
 
