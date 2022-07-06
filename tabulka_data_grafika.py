@@ -114,8 +114,11 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.actionPhonebook_cz.setObjectName("actionPhonebook_cz")
         self.actionHaveibeenpwned_com = QtWidgets.QAction(MainWindow)
         self.actionHaveibeenpwned_com.setObjectName("actionHaveibeenpwned_com")
+        self.actionEmail_checker_net = QtWidgets.QAction(MainWindow)
+        self.actionEmail_checker_net.setObjectName("ActionEmail-checker_net")
         self.menuOdkazy.addAction(self.actionPhonebook_cz)
         self.menuOdkazy.addAction(self.actionHaveibeenpwned_com)
+        self.menuOdkazy.addAction(self.actionEmail_checker_net)
         self.menuBar.addAction(self.menuOdkazy.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -138,3 +141,4 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.menuOdkazy.setTitle(_translate("MainWindow", "Odkazy"))
         self.actionPhonebook_cz.setText(_translate("MainWindow", "Phonebook.cz"))
         self.actionHaveibeenpwned_com.setText(_translate("MainWindow", "Haveibeenpwned.com"))
+        self.actionEmail_checker_net.setText(_translate("MainWindow", "Email-checker.net"))

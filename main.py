@@ -57,6 +57,11 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         webbrowser.open_new_tab("https://haveibeenpwned.com/")
 
+    def otevrit_odkaz3(self):
+
+        webbrowser.open_new_tab("https://email-checker.net/")
+
+
     def tlacitko_nova_domena(self):
 
         najit_domenu_grafika1.reset_hodnot()
@@ -464,6 +469,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             najit_domenu_grafika1.label_3.setHidden(False)
             doba = "Doba vyhledávání: " + str(round(end-start,5)) + " vteřin"
             najit_domenu_grafika1.label_3.setText(doba)
+
         
             hodnoty_K_pouziti1.hotove_hledani = [list_ziskanych_dat, domena_text, vybrane_hledani]  # uložení dat do classy
 
@@ -578,8 +584,9 @@ if __name__ == "__main__":
     najit_domenu_grafika1.pushButton.clicked.connect(najit_domenu_grafika1.main)    # vyhledat doménu
     najit_domenu_grafika1.pushButton_2.clicked.connect(najit_domenu_grafika1.nacteni_dat_do_tabulky)    # načíst data do tabulky
 
-    tabulka_data_grafika1.actionPhonebook_cz.triggered.connect(tabulka_data_grafika1.otevrit_odkaz)
-    tabulka_data_grafika1.actionHaveibeenpwned_com.triggered.connect(tabulka_data_grafika1.otevrit_odkaz2)
+    tabulka_data_grafika1.actionPhonebook_cz.triggered.connect(tabulka_data_grafika1.otevrit_odkaz)     # otevře odkaz phonebook.cz
+    tabulka_data_grafika1.actionHaveibeenpwned_com.triggered.connect(tabulka_data_grafika1.otevrit_odkaz2) # otevře odkaz haveibeenpwned.com
+    tabulka_data_grafika1.actionEmail_checker_net.triggered.connect(tabulka_data_grafika1.otevrit_odkaz3) # otevře odkaz email-checker.net
 
     app.setQuitOnLastWindowClosed(False)
     app.lastWindowClosed.connect(tabulka_data_grafika1.about_to_quit_funkce)
