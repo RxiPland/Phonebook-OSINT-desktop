@@ -28,7 +28,6 @@ class Ui_MainWindow_najit_domenu_grafika(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
-
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(30, 20, 181, 20))
         self.label.setObjectName("label")
@@ -60,7 +59,7 @@ class Ui_MainWindow_najit_domenu_grafika(object):
         self.label_3.setHidden(True)
 
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
-        self.label_4.setGeometry(QtCore.QRect(230, 20, 315, 20))
+        self.label_4.setGeometry(QtCore.QRect(250, 20, 315, 20))
         self.label_4.setObjectName("label_4")
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
@@ -89,4 +88,4 @@ class Ui_MainWindow_najit_domenu_grafika(object):
         self.pushButton_2.setText(_translate("MainWindow", "Načíst data do tabulky"))
         self.label_3.setText(_translate("MainWindow", "Doba vyhledávání:"))
         self.lineEdit.setPlaceholderText(_translate("MainWindow", "facebook.com, email.seznam.cz"))
-        self.label_4.setText(_translate("MainWindow", "Zbývá X hledání"))
+        self.label_4.setText(_translate("MainWindow", "zbývá X hledání"))

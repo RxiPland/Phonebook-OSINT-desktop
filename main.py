@@ -70,6 +70,8 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         content = str(tabulka_data_grafika1.tableWidget.item(row, 0).text())
 
+        tabulka_data_grafika1.tableWidget.setCurrentCell(-1, -1)
+
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Question)
         msgBox.setWindowTitle("Oznámení")
@@ -112,11 +114,11 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
                         pocet_pokusu = '{\"Zbyva_pokusu\": 24, \"Posledni_hledani\": ' + str(den) + '}'   # 24 pokusů / den
                         f.write(pocet_pokusu)
 
-                        najit_domenu_grafika1.label_4.setText("Zbývá 24 hledání")
+                        najit_domenu_grafika1.label_4.setText("zbývá 24 hledání")
 
                 else:
 
-                    najit_domenu_grafika1.label_4.setText("Zbývá " + str(pocet_pokusu) + " hledání")
+                    najit_domenu_grafika1.label_4.setText("zbývá " + str(pocet_pokusu) + " hledání")
 
         else:
 
@@ -126,7 +128,7 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
                 f.write(pocet_pokusu)
 
-                najit_domenu_grafika1.label_4.setText("Zbývá 24 hledání")
+                najit_domenu_grafika1.label_4.setText("zbývá 24 hledání")
 
         najit_domenu_grafika1.center_funkce()
         najit_domenu_grafika1.show()
@@ -475,7 +477,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
                 f.write(pocet_pokusu)
 
-                najit_domenu_grafika1.label_4.setText("Zbývá 0 hledání")
+                najit_domenu_grafika1.label_4.setText("zbývá 0 hledání")
 
 
             return "chyba402"
