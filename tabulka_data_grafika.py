@@ -92,11 +92,13 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.lineEdit.setGeometry(QtCore.QRect(470, 440, 181, 20))
         self.lineEdit.setObjectName("lineEdit")
         self.lineEdit.setHidden(True)
+        self.lineEdit.setReadOnly(True)
 
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_2.setGeometry(QtCore.QRect(470, 470, 181, 20))
         self.lineEdit_2.setObjectName("lineEdit_2")
         self.lineEdit_2.setHidden(True)
+        self.lineEdit_2.setReadOnly(True)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
