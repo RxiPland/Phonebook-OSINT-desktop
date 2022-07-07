@@ -3,7 +3,7 @@
 # Python 3.9.12
 
 
-# Phonebook - desktop (využíváná stránka: https://phonebook.cz/)
+# Phonebook - desktop (využívaná stránka: https://phonebook.cz/)
 
 from tabulka_data_grafika import Ui_MainWindow_tabulka_data_grafika
 from najit_domenu_grafika import Ui_MainWindow_najit_domenu_grafika
