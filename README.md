@@ -30,5 +30,7 @@
 pip install PyQt5
 pip install Requests
 pip install Pyperclip
+pip install openpyxl
+pip install Pandas
 
 ```
