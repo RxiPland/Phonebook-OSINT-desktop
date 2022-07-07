@@ -101,6 +101,17 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         webbrowser.open_new_tab("https://email-checker.net/")
 
+    def napoveda_pocet_pokusu(self):
+
+        # nápověda, která vysvětluje zaznamenávání počtu pokusů
+
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Question)
+        msgBox.setWindowTitle("Nápověda")
+        msgBox.setText("Počet zbývajících pokusů NEMUSÍ být přesný.\n\nProgram odečítá pouze ty pokusy, které udělá sám, takže pokud uživatel vyhledá přímo z původní stránky (nebo smaže soubor se záznamem), program tento odečtený pokus nezaznamená a zapíše nula pokusů až tehdy, kdy ho stránka nepustí dál.\nTakže se může stát, že uživateli budou zbývat pokusy, ale najednou se z nich stane nula, protože některé z nich BYLY použity mimo program.\n\nPokusy by se měly obnovit každý den v 0:00:00\nOdhadovaný počet pokusů: 24/den")
+        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.exec()
+
 
     def otevrit_odkaz_tabulka(self):
 
@@ -840,7 +851,9 @@ if __name__ == "__main__":
     tabulka_data_grafika1.actionHaveibeenpwned_com.triggered.connect(tabulka_data_grafika1.otevrit_odkaz2) # otevře odkaz haveibeenpwned.com
     tabulka_data_grafika1.actionEmail_checker_net.triggered.connect(tabulka_data_grafika1.otevrit_odkaz3) # otevře odkaz email-checker.net
 
-    tabulka_data_grafika1.tableWidget.cellDoubleClicked.connect(tabulka_data_grafika1.otevrit_odkaz_tabulka)
+    tabulka_data_grafika1.actionZbyva.triggered.connect(tabulka_data_grafika1.napoveda_pocet_pokusu) # otevře nápovědu
+
+    tabulka_data_grafika1.tableWidget.cellDoubleClicked.connect(tabulka_data_grafika1.otevrit_odkaz_tabulka) # otevře odkaz, pokud uživatel klikl dvakrát na pole v tabulce
 
     app.setQuitOnLastWindowClosed(False)
     app.lastWindowClosed.connect(tabulka_data_grafika1.about_to_quit_funkce)

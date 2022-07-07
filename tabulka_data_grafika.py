@@ -128,7 +128,6 @@ class Ui_MainWindow_tabulka_data_grafika(object):
 
         self.actionZbyva = QtWidgets.QAction(MainWindow)
         self.actionZbyva.setObjectName("actionZbyva")
-        self.actionZbyva.setEnabled(False)
 
         self.actionReset_pokusy = QtWidgets.QAction(MainWindow)
         self.actionReset_pokusy.setObjectName("actionReset_pokusy")
