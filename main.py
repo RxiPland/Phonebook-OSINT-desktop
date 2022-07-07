@@ -51,6 +51,44 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
         QMainWindow.__init__(self, *args, **kwargs)
         self.setupUi(self)
 
+    def start_aplikace(self):
+
+        # spuštění aplikace
+
+        with open("zbyva_pokusu.json", "r") as f:
+
+            nactena_data = loads(f.read())
+            pocet_pokusu = str(nactena_data["Zbyva_pokusu"])
+
+        tabulka_data_grafika1.actionZbyva.setText("Zbývá: " + pocet_pokusu)
+
+        t = Thread(target=tabulka_data_grafika1.aktualizovat_cas)
+        t.start()
+
+        tabulka_data_grafika1.show()
+
+
+    def aktualizovat_cas(self):
+        # funkce, která se spustí v Threadu a bude aktualizovat čas do obnovení pokusů
+
+        cas_obnovy = datetime.timedelta(hours=24)
+
+        while ukoncit != True:
+
+            now = datetime.datetime.now()
+
+            hodiny = now.hour
+            minuty = now.minute
+            sekundy = now.second
+
+            cas_ted = datetime.timedelta(hours=hodiny, minutes=minuty, seconds=sekundy)
+            rozdil = str(cas_obnovy - cas_ted)
+
+            tabulka_data_grafika1.actionReset_pokusy.setText("Další pokusy za: " + rozdil)
+
+            time.sleep(1)
+
+
     def otevrit_odkaz(self):
 
         webbrowser.open_new_tab("https://phonebook.cz/")
@@ -147,16 +185,31 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         if hodnoty_K_pouziti1.okno == 0:
             # pokud uživatel zavře okno s tabulkou, program se ukončí
+            global ukoncit
 
+            ukoncit = True # slouží pro zastavení Threadu ve funkci aktualizovat_cas()
             app.quit()
         
         elif hodnoty_K_pouziti1.okno == 1:
             # pokud uživatel zavře okno najít doménu, funkce otevře okno s tabulkou
 
+            ukoncit = False
+
+            with open("zbyva_pokusu.json", "r") as f:
+
+                nactena_data = loads(f.read())
+                pocet_pokusu = str(nactena_data["Zbyva_pokusu"])
+
+            tabulka_data_grafika1.actionZbyva.setText("Zbývá: " + pocet_pokusu)
+
+            t = Thread(target=tabulka_data_grafika1.aktualizovat_cas)
+            t.start()
+
             tabulka_data_grafika1.center_funkce()
             tabulka_data_grafika1.show()
             najit_domenu_grafika1.close()
             hodnoty_K_pouziti1.okno = 0
+
 
 
     def udelat_json(self, content: list, typ_souboru: str, cesta_soubor: str):
@@ -340,6 +393,10 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
     def reset_hodnot(self):
 
         # vyresetuje hodnoty do původního stavu v polích v okně najit_domenu.py
+
+        global ukoncit
+
+        ukoncit = True
 
         najit_domenu_grafika1.label.setHidden(False)
         najit_domenu_grafika1.label_2.setHidden(False)
@@ -763,10 +820,12 @@ if __name__ == "__main__":
     hodnoty_K_pouziti1 = Hodnoty_K_pouziti0()
     file_dialog1 = file_dialog0()
 
-    tabulka_data_grafika1.show()
+    global ukoncit
+    ukoncit = False
+
+    tabulka_data_grafika1.start_aplikace()
 
     tabulka_data_grafika1.label_3.linkActivated.connect(tabulka_data_grafika1.otevrit_odkaz)    # otevře odkaz na phonebook.cz
-
 
     tabulka_data_grafika1.pushButton.clicked.connect(tabulka_data_grafika1.tlacitko_nova_domena)  # najít novou doménu
     tabulka_data_grafika1.pushButton_2.clicked.connect(tabulka_data_grafika1.ulozit_do_souboru) # uložit data do souboru

@@ -111,17 +111,36 @@ class Ui_MainWindow_tabulka_data_grafika(object):
 
         self.menuOdkazy = QtWidgets.QMenu(self.menuBar)
         self.menuOdkazy.setObjectName("menuOdkazy")
+
+        self.menuPokusy = QtWidgets.QMenu(self.menuBar)
+        self.menuPokusy.setObjectName("menuPokusy")
+
         MainWindow.setMenuBar(self.menuBar)
+
         self.actionPhonebook_cz = QtWidgets.QAction(MainWindow)
         self.actionPhonebook_cz.setObjectName("actionPhonebook_cz")
+
         self.actionHaveibeenpwned_com = QtWidgets.QAction(MainWindow)
         self.actionHaveibeenpwned_com.setObjectName("actionHaveibeenpwned_com")
+
         self.actionEmail_checker_net = QtWidgets.QAction(MainWindow)
         self.actionEmail_checker_net.setObjectName("ActionEmail-checker_net")
+
+        self.actionZbyva = QtWidgets.QAction(MainWindow)
+        self.actionZbyva.setObjectName("actionZbyva")
+
+        self.actionReset_pokusy = QtWidgets.QAction(MainWindow)
+        self.actionReset_pokusy.setObjectName("actionReset_pokusy")
+
         self.menuOdkazy.addAction(self.actionPhonebook_cz)
         self.menuOdkazy.addAction(self.actionHaveibeenpwned_com)
         self.menuOdkazy.addAction(self.actionEmail_checker_net)
+
+        self.menuPokusy.addAction(self.actionZbyva)
+        self.menuPokusy.addAction(self.actionReset_pokusy)
+
         self.menuBar.addAction(self.menuOdkazy.menuAction())
+        self.menuBar.addAction(self.menuPokusy.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -141,6 +160,9 @@ class Ui_MainWindow_tabulka_data_grafika(object):
         self.lineEdit.setText(_translate("MainWindow", "X emailů/ subdomén/ adresářů"))
         self.lineEdit_2.setText(_translate("MainWindow", "[Doména]"))
         self.menuOdkazy.setTitle(_translate("MainWindow", "Odkazy"))
+        self.menuPokusy.setTitle(_translate("MainWindow", "Počet pokusů"))
         self.actionPhonebook_cz.setText(_translate("MainWindow", "Phonebook.cz"))
         self.actionHaveibeenpwned_com.setText(_translate("MainWindow", "Haveibeenpwned.com"))
         self.actionEmail_checker_net.setText(_translate("MainWindow", "Email-checker.net"))
+        self.actionZbyva.setText(_translate("MainWindow", "Zbývá: X"))
+        self.actionReset_pokusy.setText(_translate("MainWindow", "Další pokusy za: XX:XX:XX"))
