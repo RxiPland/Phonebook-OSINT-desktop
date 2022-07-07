@@ -13,7 +13,7 @@
 # Použití
 
 - Program slouží pro získání emailových adres, subdomén nebo adresářů na základě domény (např. github.com)
-- Je zde možnost si výsledky zkopírovat do schránky, nebo uložit do souboru jako TXT nebo JSON (Doporučuji poté [Zkrášlovač jsonu](https://github.com/RxiPland/Json-beautifier))
+- Je zde možnost si výsledky zkopírovat do schránky, nebo uložit do souboru jako textový dokument, excelovou tabulku nebo JSON (Doporučuji poté [Zkrášlovač jsonu](https://github.com/RxiPland/Json-beautifier))
 - Stránka má omezený počet vyhledávání/den, tudíž program přestane fungovat, jakmile přesáhnete tento denní limit (na základě IP adresy)
 - Program také nebude fungovat, pokud bude aktivní vpn (stránka ji blokuje)
 <br/>
