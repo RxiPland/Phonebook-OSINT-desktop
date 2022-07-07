@@ -70,27 +70,33 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         content = str(tabulka_data_grafika1.tableWidget.item(row, 0).text())
 
-        tabulka_data_grafika1.tableWidget.setCurrentCell(-1, -1)
+        if not "@" in content:  # otevře pouze odkazy
 
-        msgBox = QMessageBox()
-        msgBox.setIcon(QMessageBox.Question)
-        msgBox.setWindowTitle("Oznámení")
-        msgBox.setText("Opravdu chcete otevřít odkaz: " + content )
-        msgBox.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
-        buttonY = msgBox.button(QMessageBox.Yes)
-        buttonY.setText("Ano")
-        buttonN = msgBox.button(QMessageBox.No)
-        buttonN.setText("Zrušit")
+            tabulka_data_grafika1.tableWidget.setCurrentCell(-1, -1)
 
-        returnValue = msgBox.exec()
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setWindowTitle("Oznámení")
+            msgBox.setText("Opravdu chcete otevřít odkaz: " + content )
+            msgBox.setStandardButtons(QMessageBox.Yes|QMessageBox.No)
+            buttonY = msgBox.button(QMessageBox.Yes)
+            buttonY.setText("Ano")
+            buttonN = msgBox.button(QMessageBox.No)
+            buttonN.setText("Zrušit")
 
-        if returnValue == QMessageBox.Yes:
+            returnValue = msgBox.exec()
 
-            webbrowser.open_new_tab(content)
+            if returnValue == QMessageBox.Yes:
 
-        else:
+                if not "http" in content or "https" in content:
 
-            return
+                    content = "https://" + content
+
+                webbrowser.open_new_tab(content)
+
+            else:
+
+                return
 
 
     def tlacitko_nova_domena(self):
@@ -182,16 +188,15 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
             
             finalni_json = {"Data": dohromady}
 
+
             with open(cesta_soubor, "w") as f:
 
                 # uložení dat do souboru
 
-                string_json = str(finalni_json).replace("\'", "\"")
+                string_json = str(finalni_json)#.replace("\'", "\"")
 
                 f.write(string_json)
 
-
-            '''
             with open(cesta_soubor, "r") as f:
 
                 # znovu načtení souboru
@@ -207,7 +212,6 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
                 f.write(obsah)
 
-            '''
 
         else:
 
@@ -492,7 +496,6 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
             hodnoty_K_pouziti1.predchozi_id = loads(response.text)["id"]
 
-
             url_get = "https://public.intelx.io/phonebook/search/result?k=" + API_KEY + "&id=" + hodnoty_K_pouziti1.predchozi_id  +"&limit=10000"
             list_ziskanych_dat = []
 
@@ -502,7 +505,17 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
                 # data= v requestu není potřeba, protože jsou parametry už v URL
 
-                response2 = loads(session1.get(url=url_get, headers=headers).text)
+                try:
+
+                    response2 = session1.get(url=url_get, headers=headers)
+
+                except:
+
+                    najit_domenu_grafika1.zobrazit_error(start, "Neznámá chyba (pravděpodobně na straně webu)")
+
+                    return
+
+                response2 = loads(response2.text)
 
                 if response2["status"] == 0:
 
@@ -576,6 +589,10 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
         
             hodnoty_K_pouziti1.hotove_hledani = [list_ziskanych_dat, domena_text, vybrane_hledani]  # uložení dat do classy
+
+        else:
+
+            najit_domenu_grafika1.zobrazit_error(start, "Neznámá chyba (pravděpodobně na straně webu)")
 
     def kontrola(self):
 
@@ -692,7 +709,7 @@ if __name__ == "__main__":
     tabulka_data_grafika1.actionHaveibeenpwned_com.triggered.connect(tabulka_data_grafika1.otevrit_odkaz2) # otevře odkaz haveibeenpwned.com
     tabulka_data_grafika1.actionEmail_checker_net.triggered.connect(tabulka_data_grafika1.otevrit_odkaz3) # otevře odkaz email-checker.net
 
-    tabulka_data_grafika1.tableWidget.cellClicked.connect(tabulka_data_grafika1.otevrit_odkaz_tabulka)
+    tabulka_data_grafika1.tableWidget.cellDoubleClicked.connect(tabulka_data_grafika1.otevrit_odkaz_tabulka)
 
     app.setQuitOnLastWindowClosed(False)
     app.lastWindowClosed.connect(tabulka_data_grafika1.about_to_quit_funkce)
