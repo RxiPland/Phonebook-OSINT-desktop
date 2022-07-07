@@ -59,7 +59,7 @@ class Ui_MainWindow_najit_domenu_grafika(object):
         self.label_3.setHidden(True)
 
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
-        self.label_4.setGeometry(QtCore.QRect(250, 20, 315, 20))
+        self.label_4.setGeometry(QtCore.QRect(245, 20, 315, 20))
         self.label_4.setObjectName("label_4")
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
