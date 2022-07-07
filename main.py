@@ -196,7 +196,7 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         if hodnoty_K_pouziti1.okno == 0:
             # pokud uživatel zavře okno s tabulkou, program se ukončí
-            global ukoncit
+            global ukoncit, ukoncit2
 
             ukoncit = True # slouží pro zastavení Threadu ve funkci aktualizovat_cas()
             app.quit()
@@ -205,6 +205,7 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
             # pokud uživatel zavře okno najít doménu, funkce otevře okno s tabulkou
 
             ukoncit = False
+            ukoncit2 = True
 
             with open("zbyva_pokusu.json", "r") as f:
 
@@ -401,6 +402,22 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
         QMainWindow.__init__(self, *args, **kwargs)
         self.setupUi(self)
 
+    def doba_trvani_requestu(self):
+
+        # while loop pro vypisování času, který uběhl od začátku poslání requestu
+        # spuští se v Threadu
+
+        start = time.time()
+
+        while ukoncit2 != True:
+
+            end = time.time()
+
+            doba = "Doba trvání: " + str(round(end-start,5)) + " vteřin"
+            najit_domenu_grafika1.label_3.setText(doba)
+
+            time.sleep(0.05)
+
     def reset_hodnot(self):
 
         # vyresetuje hodnoty do původního stavu v polích v okně najit_domenu.py
@@ -511,7 +528,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
         return API_KEY
 
-    def zobrazit_error(self, start: float, message: str):
+    def zobrazit_error(self, message: str):
 
         # funkce, která dosadí do line editu text s chybou, označí ho červeně a ukáže dobu trvání
 
@@ -522,10 +539,9 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
         najit_domenu_grafika1.label_2.setHidden(True)
         najit_domenu_grafika1.label_4.setHidden(True)
 
-        end = time.time()
-        najit_domenu_grafika1.label_3.setHidden(False)
-        doba = "Doba trvání: " + str(round(end-start,5)) + " vteřin"
-        najit_domenu_grafika1.label_3.setText(doba)
+        global ukoncit2
+        ukoncit2 = True
+
 
 
     def vyhledat(self):
@@ -533,8 +549,6 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
         # 1. vyšle search (1x)
         # 2. while loop, který posílá result requesty, pouze dokud nebude ve vráceném jsonu "status" číslo 1, který tuto smyčku ukončí
-
-        start = time.time()
 
         headers= {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.115 Safari/537.36"}
         moznosti = {"Subdomény": 1, "Emailové adresy": 2, "Adresáře": 3}
@@ -548,13 +562,13 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
                 get("https://google.com")
 
-                najit_domenu_grafika1.zobrazit_error(start, "Stránka https://phonebook.cz není dostupná! (výpadek / údržba)")
+                najit_domenu_grafika1.zobrazit_error("Stránka https://phonebook.cz není dostupná! (výpadek / údržba)")
 
                 return "chyba_phonebook.cz"
 
             except:
 
-                najit_domenu_grafika1.zobrazit_error(start, "Nelze se připojit k internetu!")
+                najit_domenu_grafika1.zobrazit_error("Nelze se připojit k internetu!")
 
                 return "chyba_internet"
 
@@ -597,20 +611,20 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
                 get("https://google.com")
 
-                najit_domenu_grafika1.zobrazit_error(start, "Stránka https://public.intelx.io není dostupná! (výpadek / údržba)")
+                najit_domenu_grafika1.zobrazit_error("Stránka https://public.intelx.io není dostupná! (výpadek / údržba)")
 
                 return "chyba_public.intelx.io"
 
             except:
 
-                najit_domenu_grafika1.zobrazit_error(start, "Nelze se připojit k internetu!")
+                najit_domenu_grafika1.zobrazit_error("Nelze se připojit k internetu!")
 
                 return "chyba_internet"
 
 
         if response.status_code == 402:
             
-            najit_domenu_grafika1.zobrazit_error(start, "Byl přesáhnut denní limit požadavků!")
+            najit_domenu_grafika1.zobrazit_error("Byl přesáhnut denní limit požadavků!")
 
             with open("zbyva_pokusu.json", "w") as f:
 
@@ -627,7 +641,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
         elif response.status_code == 403:
             
-            najit_domenu_grafika1.zobrazit_error(start, "IP adresa je na black listu (zkuste vypnout VPN)")
+            najit_domenu_grafika1.zobrazit_error("IP adresa je na black listu (zkuste vypnout VPN)")
 
             return "chyba403"
 
@@ -638,9 +652,11 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
             url_get = "https://public.intelx.io/phonebook/search/result?k=" + API_KEY + "&id=" + hodnoty_K_pouziti1.predchozi_id  +"&limit=10000"
             list_ziskanych_dat = []
 
-            time.sleep(hodnoty_K_pouziti1.cekani_mezi_requestama)        
+            time.sleep(hodnoty_K_pouziti1.cekani_mezi_requestama)
 
-            while True:
+            global ukoncit2
+
+            while ukoncit2 != True:
 
                 # data= v requestu není potřeba, protože jsou parametry už v URL
 
@@ -650,7 +666,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
                 except:
 
-                    najit_domenu_grafika1.zobrazit_error(start, "Neznámá chyba (pravděpodobně na straně webu)")
+                    najit_domenu_grafika1.zobrazit_error("Neznámá chyba (pravděpodobně na straně webu)")
 
                     return
 
@@ -686,23 +702,17 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
                 time.sleep(hodnoty_K_pouziti1.cekani_mezi_requestama)   # defaultně 1s
 
-            end = time.time()
 
             najit_domenu_grafika1.pushButton_2.setHidden(False)
             najit_domenu_grafika1.pushButton.setHidden(True)
             najit_domenu_grafika1.comboBox.setHidden(True)
             najit_domenu_grafika1.label.setHidden(True)
-            najit_domenu_grafika1.label_2.setHidden(True)
             najit_domenu_grafika1.label_4.setHidden(True)
 
 
             najit_domenu_grafika1.lineEdit.setText("Hledání bylo dokončeno.")
             najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
             najit_domenu_grafika1.lineEdit.setStyleSheet("background-color: green")
-            najit_domenu_grafika1.label_3.setHidden(False)
-            doba = "Doba vyhledávání: " + str(round(end-start,5)) + " vteřin"
-            najit_domenu_grafika1.label_3.setText(doba)
-
 
             den = datetime.datetime.now().day
 
@@ -732,7 +742,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
         else:
 
-            najit_domenu_grafika1.zobrazit_error(start, "Neznámá chyba (pravděpodobně na straně webu)")
+            najit_domenu_grafika1.zobrazit_error("Neznámá chyba (pravděpodobně na straně webu)")
 
     def kontrola(self):
 
@@ -815,9 +825,16 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
             najit_domenu_grafika1.lineEdit.setReadOnly(True)
             najit_domenu_grafika1.lineEdit.setClearButtonEnabled(False)
+            
+            najit_domenu_grafika1.label_2.setHidden(True)
 
             # funkce hledání informací
             t = Thread(target=najit_domenu_grafika1.vyhledat)
+            t.start()
+
+            najit_domenu_grafika1.label_3.setHidden(False)
+
+            t = Thread(target=najit_domenu_grafika1.doba_trvani_requestu)
             t.start()
 
 
@@ -831,8 +848,9 @@ if __name__ == "__main__":
     hodnoty_K_pouziti1 = Hodnoty_K_pouziti0()
     file_dialog1 = file_dialog0()
 
-    global ukoncit
+    global ukoncit, ukoncit2
     ukoncit = False
+    ukoncit2 = False
 
     tabulka_data_grafika1.start_aplikace()
 
