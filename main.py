@@ -404,10 +404,13 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
     def doba_trvani_requestu(self):
 
+        global ukoncit2
+
         # while loop pro vypisování času, který uběhl od začátku poslání requestu
         # spuští se v Threadu
 
         start = time.time()
+        ukoncit2 = False
 
         while ukoncit2 != True:
 
@@ -702,6 +705,8 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
                 time.sleep(hodnoty_K_pouziti1.cekani_mezi_requestama)   # defaultně 1s
 
+
+            ukoncit2 = True  # zastavení časovače
 
             najit_domenu_grafika1.pushButton_2.setHidden(False)
             najit_domenu_grafika1.pushButton.setHidden(True)
