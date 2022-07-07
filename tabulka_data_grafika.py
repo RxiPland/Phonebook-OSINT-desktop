@@ -128,9 +128,11 @@ class Ui_MainWindow_tabulka_data_grafika(object):
 
         self.actionZbyva = QtWidgets.QAction(MainWindow)
         self.actionZbyva.setObjectName("actionZbyva")
+        self.actionZbyva.setEnabled(False)
 
         self.actionReset_pokusy = QtWidgets.QAction(MainWindow)
         self.actionReset_pokusy.setObjectName("actionReset_pokusy")
+        self.actionReset_pokusy.setEnabled(False)
 
         self.menuOdkazy.addAction(self.actionPhonebook_cz)
         self.menuOdkazy.addAction(self.actionHaveibeenpwned_com)
