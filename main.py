@@ -386,8 +386,8 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
                 import pandas
 
-                pandas_dataframe = pandas.DataFrame(hodnoty_K_pouziti1.hotove_hledani[0])
-                pandas_dataframe.to_excel(cesta_soubor ,index=False, sheet_name="Sheet1")    # uložení hodnot do excelu
+                pandas_dataframe = pandas.DataFrame({"Data": hodnoty_K_pouziti1.hotove_hledani[0]})
+                pandas_dataframe.to_excel(cesta_soubor, index=False, sheet_name="Sheet1")    # uložení hodnot do excelu
 
 
             else:
