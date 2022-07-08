@@ -19,7 +19,7 @@
 <br/>
 
 # Náhled
-![1 1](https://user-images.githubusercontent.com/82058894/177490636-09f99ba3-eef6-4ad1-8b31-9d0c1cbb9ab0.png)
+![1](https://user-images.githubusercontent.com/82058894/177979089-c181c11a-3f28-469f-9082-c16ac4cc17c8.png)
 
 **Možnosti uložení:**<br/>
 ![2](https://user-images.githubusercontent.com/82058894/177725961-ea62555f-2c23-4929-8662-5021a3f01cdc.png)
