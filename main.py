@@ -55,12 +55,39 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
         # spuštění aplikace
 
-        with open("zbyva_pokusu.json", "r") as f:
+        den = datetime.datetime.now().day
 
-            nactena_data = loads(f.read())
-            pocet_pokusu = str(nactena_data["Zbyva_pokusu"])
+        if exists("zbyva_pokusu.json"):
 
-        tabulka_data_grafika1.actionZbyva.setText("Zbývá: " + pocet_pokusu)
+            with open("zbyva_pokusu.json", "r") as f:
+
+                nactena_data = loads(f.read())
+                pocet_pokusu = nactena_data["Zbyva_pokusu"]
+                posledni_hledani = int(nactena_data["Posledni_hledani"])
+
+                if posledni_hledani != den:  # vyresetovány pokusy (webová stránka)
+
+                    with open("zbyva_pokusu.json", "w") as f:
+
+                        pocet_pokusu_str = '{\"Zbyva_pokusu\": 24, \"Posledni_hledani\": ' + str(den) + '}'   # 24 pokusů / den
+                        f.write(pocet_pokusu_str)
+
+                        tabulka_data_grafika1.actionZbyva.setText("Zbývá: 24")
+
+                else:
+
+                    tabulka_data_grafika1.actionZbyva.setText("Zbývá: " + str(pocet_pokusu))
+
+        else:
+
+            with open("zbyva_pokusu.json", "w") as f:
+
+                pocet_pokusu_str = '{\"Zbyva_pokusu\": 24, \"Posledni_hledani\": ' + str(den) + '}'   # 24 pokusů / den
+
+                f.write(pocet_pokusu_str)
+
+                tabulka_data_grafika1.actionZbyva.setText("Zbývá: 24")
+
 
         t = Thread(target=tabulka_data_grafika1.aktualizovat_cas)
         t.start()
@@ -223,118 +250,132 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
             hodnoty_K_pouziti1.okno = 0
 
 
+    def vymazat_mezery(self, obsah_raw):
 
-    def udelat_json(self, content: list, typ_souboru: str, cesta_soubor: str):
+        # preventivně vymaže všechny mezery (kromě mezer v uvozovkách)
 
-        # funkce pro Thread
+        final = ""
+        uvozovky_lock = False   # false == mimo uvozovky;  true == v uvozovkách
 
-        moznosti = {1: "Subdoména", 2: "Emailová adresa", 3: "Adresář"}
+        for znak in obsah_raw:
+            if znak in ["\"", "\'"]:
 
-        dohromady = []
+                if uvozovky_lock:
 
-        domena = hodnoty_K_pouziti1.hotove_hledani[1]
-        typ_hledani = moznosti[hodnoty_K_pouziti1.hotove_hledani[2]]
-
-        for item in content:
-
-            if "\'" in item:
-
-                item = str(item).replace("\'", "#&;UVOZOVKA;&#")
-
-            sablona = {"Content": item, "Domena": domena, "Typ": typ_hledani}
-            dohromady.append(sablona)
-        
-        finalni_json = {"Data": dohromady}
-
-
-        if "zkrášlený" in typ_souboru.lower():
-
-            # zkrášlený json
-            # https://github.com/RxiPland/Json-beautifier
-            
-            final = ""              # pomocná proměnná do které for zapisuje postupně znak po znaku
-            i = 0                   # počet /t (tab) odsazení -> bude se postupně vnořovat
-            uvozovky_lock = False   # false == mimo uvozovky;  true == v uvozovkách
-
-            for x, character in enumerate(finalni_json):
-
-                if character in ["\'", "\""]:
-                    if uvozovky_lock == False:
-                        uvozovky_lock = True
-                    else:
-                        if "\'" in character:
-                            character = str(character).replace("\'", "#&;UVOZOVKA;&#")
-
-                        uvozovky_lock = False
-
-                    final += character
-                
-                elif character == ":" and uvozovky_lock == False:
-                    if finalni_json[x] == " ":
-                        pass
-                    else:
-                        character += ' '
-
-                    final += character
-
-                elif character == "{" and uvozovky_lock == False:
-                    final += "{\n" + "\t"*(i+1)
-                    i += 1
-
-                elif character == "}" and uvozovky_lock == False:
-                    i -= 1
-                    final += "\n" + "\t"*i + "}"
-
-                elif character == "," and uvozovky_lock == False:
-                    final += "," + "\n" + "\t"*i
-
-                elif character == "[" and uvozovky_lock == False:
-                    if finalni_json[x+1] == "]":
-                        final += character
-                    else:
-                        i += 1
-                        final += "[" + "\n" + "\t"*i
-
-                elif character == "]" and uvozovky_lock == False:
-                    if finalni_json[x-1] == "[":
-                        final += character
-                    else:
-                        i -= 1
-                        final += "\n" + "\t"*i + "]"
-
+                    uvozovky_lock = False
                 else:
-                    final += character
+                    uvozovky_lock = True
 
-            finalni_json = final
+                final += znak
+
+            elif znak in [" ", "\n", "\t"] and not uvozovky_lock:
+                pass
+
+            else:
+                final += znak
+
+        return final
 
 
-        with open(cesta_soubor, "w") as f:
-
-            # uložení dat do souboru
-
-            string_json = str(finalni_json).replace("\'", "\"").replace("#&;UVOZOVKA;&#", "\'")
-
-            f.write(string_json)
-
-
-    def ulozit_do_souboru(self):
+    def ulozit_do_souboru(self, vybrana_lokace):
         # uloží data z tabulky do souboru
+        # funkce je spuštěna v Threadu
 
-        vybrana_lokace = file_dialog1.vyberLokace_save()
         cesta_soubor = vybrana_lokace[0]    # cesta k souboru
 
         if cesta_soubor != "" and vybrana_lokace != "exited":
 
-            typ_souboru = vybrana_lokace[1]     # .txt / .json / .xlsx
-
-            content = hodnoty_K_pouziti1.hotove_hledani[0]
+            typ_souboru: str = vybrana_lokace[1]     # .txt / .json / .xlsx
+            content = hodnoty_K_pouziti1.hotove_hledani[0]  # nalezená data
 
             if ".json" in typ_souboru:
 
                 # uživatel vybral json
 
-                t = Thread(target=tabulka_data_grafika1.udelat_json, args=[content, typ_souboru, cesta_soubor])
-                t.start()
+                moznosti = {1: "Subdomain", 2: "EmailAddress", 3: "Directory"}
+
+                dohromady = []
+
+                domena = hodnoty_K_pouziti1.hotove_hledani[1]
+                typ_hledani = moznosti[hodnoty_K_pouziti1.hotove_hledani[2]]
+
+                for item in content:
+
+                    if "\'" in item:
+
+                        item = str(item).replace("\'", "#&;UVOZOVKA;&#")
+
+                    dohromady.append(item)
+                
+                finalni_json = str({"Data": dohromady, "Domena": domena, "Typ": typ_hledani})
+
+                if "zkrášlený" in typ_souboru.lower():
+
+                    # zkrášlený json
+                    # https://github.com/RxiPland/Json-beautifier
+
+                    finalni_json = tabulka_data_grafika1.vymazat_mezery(finalni_json)
+                    
+                    final = ""              # pomocná proměnná do které for zapisuje postupně znak po znaku
+                    i = 0                   # počet /t (tab) odsazení -> bude se postupně vnořovat
+                    uvozovky_lock = False   # false == mimo uvozovky;  true == v uvozovkách
+
+                    for x, character in enumerate(finalni_json):
+
+                        if character in ["\'", "\""]:
+                            if uvozovky_lock == False:
+                                uvozovky_lock = True
+                            else:
+                                uvozovky_lock = False
+
+                            final += character
+                        
+                        elif character == ":" and uvozovky_lock == False:
+                            if finalni_json[x] == " ":
+                                pass
+                            else:
+                                character += ' '
+
+                            final += character
+
+                        elif character == "{" and uvozovky_lock == False:
+                            final += "{\n" + "\t"*(i+1)
+                            i += 1
+
+                        elif character == "}" and uvozovky_lock == False:
+                            i -= 1
+                            final += "\n" + "\t"*i + "}"
+
+                        elif character == "," and uvozovky_lock == False:
+                            final += "," + "\n" + "\t"*i
+
+                        elif character == "[" and uvozovky_lock == False:
+                            if finalni_json[x+1] == "]":
+                                final += character
+                            else:
+                                i += 1
+                                final += "[" + "\n" + "\t"*i
+
+                        elif character == "]" and uvozovky_lock == False:
+                            if finalni_json[x-1] == "[":
+                                final += character
+                            else:
+                                i -= 1
+                                final += "\n" + "\t"*i + "]"
+
+                        else:
+                            final += character
+
+                    finalni_json = final
+
+
+                with open(cesta_soubor, "w") as f:
+
+                    # uložení dat do souboru
+
+                    string_json = finalni_json.replace("\'", "\"").replace("#&;UVOZOVKA;&#", "\'")
+
+                    f.write(string_json)
 
 
             elif ".xlsx" in typ_souboru:
@@ -344,7 +385,7 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
                 import pandas
 
                 pandas_dataframe = pandas.DataFrame(hodnoty_K_pouziti1.hotove_hledani[0])
-                pandas_dataframe.to_excel(cesta_soubor, index=False, sheet_name="Sheet1")    # uložení hodnot do excelu
+                pandas_dataframe.to_excel(cesta_soubor ,index=False, sheet_name="Sheet1")    # uložení hodnot do excelu
 
 
             else:
@@ -359,6 +400,15 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
                             f.writelines(item)
                         else:
                             f.writelines("\n" + item)
+
+    def ulozit_main(self):
+
+        # funkce která spustí Thread
+
+        vybrana_lokace = file_dialog1.vyberLokace_save()
+
+        t = Thread(target=tabulka_data_grafika1.ulozit_do_souboru, args=[vybrana_lokace])
+        t.start()
 
 
     def kopirovat_do_schranky(self):
@@ -416,7 +466,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
             end = time.time()
 
-            doba = "Doba trvání: " + str(round(end-start,5)) + " vteřin"
+            doba = "Doba trvání: " + str(round(end-start,2)) + " vteřin"
             najit_domenu_grafika1.label_3.setText(doba)
 
             time.sleep(0.05)
@@ -839,6 +889,7 @@ class najit_domenu_grafika0(QMainWindow, Ui_MainWindow_najit_domenu_grafika):
 
             najit_domenu_grafika1.label_3.setHidden(False)
 
+            # funkce pro ukazování času doby trvání
             t = Thread(target=najit_domenu_grafika1.doba_trvani_requestu)
             t.start()
 
@@ -862,7 +913,7 @@ if __name__ == "__main__":
     tabulka_data_grafika1.label_3.linkActivated.connect(tabulka_data_grafika1.otevrit_odkaz)    # otevře odkaz na phonebook.cz
 
     tabulka_data_grafika1.pushButton.clicked.connect(tabulka_data_grafika1.tlacitko_nova_domena)  # najít novou doménu
-    tabulka_data_grafika1.pushButton_2.clicked.connect(tabulka_data_grafika1.ulozit_do_souboru) # uložit data do souboru
+    tabulka_data_grafika1.pushButton_2.clicked.connect(tabulka_data_grafika1.ulozit_main) # uložit data do souboru
     tabulka_data_grafika1.pushButton_3.clicked.connect(tabulka_data_grafika1.kopirovat_do_schranky) # kopírovat všechna data do schránky
     tabulka_data_grafika1.pushButton_4.clicked.connect(tabulka_data_grafika1.kopirovat_konkretni_radek) # kopírovat řádek do schránky
 
