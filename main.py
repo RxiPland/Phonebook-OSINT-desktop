@@ -226,6 +226,7 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
             global ukoncit, ukoncit2
 
             ukoncit = True # slouží pro zastavení Threadu ve funkci aktualizovat_cas()
+            ukoncit2 = True # slouží pro zastavení Threadu ve funkci doba_trvani_requestu() - mělo by být už dávno vypnuto
             app.quit()
         
         elif hodnoty_K_pouziti1.okno == 1:
@@ -252,6 +253,7 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
 
     def vymazat_mezery(self, obsah_raw):
 
+        # funkce pro uložení jak zkrášlený json
         # preventivně vymaže všechny mezery (kromě mezer v uvozovkách)
 
         final = ""
