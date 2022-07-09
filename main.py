@@ -380,6 +380,8 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
                     f.write(string_json)
 
             elif ".csv" in typ_souboru:
+            
+                # uživatel vybral csv
 
                 import pandas
 
