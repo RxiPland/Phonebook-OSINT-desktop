@@ -26,7 +26,7 @@ class file_dialog0(QDialog):
         # otevře průzkumník souborů a nechá uživatele vybrat cestu, kam chce uložit soubor
 
         try:
-            dlg = QFileDialog.getSaveFileName(self, 'Uložte hotový soubor', '','Textový soubor (*.txt);;JSON soubor (*.json);;Zkrášlený JSON (*.json);;Sešit Excelu (*.xlsx);;Všechny soubory (*.*)')
+            dlg = QFileDialog.getSaveFileName(self, 'Uložte hotový soubor', '','Textový soubor (*.txt);;JSON soubor (*.json);;Zkrášlený JSON (*.json);;CSV (*.csv);;Sešit Excelu (*.xlsx);;Všechny soubory (*.*)')
             return dlg
 
         except:
@@ -378,6 +378,13 @@ class tabulka_data_grafika0(QMainWindow, Ui_MainWindow_tabulka_data_grafika):
                     string_json = finalni_json.replace("\'", "\"").replace("#&;UVOZOVKA;&#", "\'")
 
                     f.write(string_json)
+
+            elif ".csv" in typ_souboru:
+
+                import pandas
+
+                pandas_dataframe = pandas.DataFrame({"Data": hodnoty_K_pouziti1.hotove_hledani[0]})
+                pandas_dataframe.to_csv(cesta_soubor, index=False)    # uložení hodnot do csv
 
 
             elif ".xlsx" in typ_souboru:
