@@ -22,7 +22,7 @@
 ![1](https://user-images.githubusercontent.com/82058894/177979089-c181c11a-3f28-469f-9082-c16ac4cc17c8.png)
 
 # Možnosti uložení
-![2](https://user-images.githubusercontent.com/82058894/177725961-ea62555f-2c23-4929-8662-5021a3f01cdc.png)
+![2](https://user-images.githubusercontent.com/82058894/178111718-809c00e8-8ff8-4520-85c3-1262401dce8a.png)
 
 # Ukázka uložení jako zkrášlený json
 ![3](https://user-images.githubusercontent.com/82058894/177979490-e86724bd-722e-4f77-ba76-6948adf817fc.png)
