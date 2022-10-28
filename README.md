@@ -1,3 +1,5 @@
+# Bylo změněno API, kvůli kterému program nadále nefunguje!
+
 # Phonebook [OSINT](https://cs.wikipedia.org/wiki/Zpravodajstv%C3%AD_z_otev%C5%99en%C3%BDch_zdroj%C5%AF) desktop
 
 - Program využívá stránku https://phonebook.cz/
